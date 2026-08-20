@@ -1,6 +1,6 @@
 # Projet 3 — API REST avec tests
 
-**À réaliser après le niveau 3 et 5.**
+**À réaliser après le niveau 7.**
 
 > 🔜 **Spécifications pas encore rédigées.**
 > Elles seront écrites au moment d'aborder ce projet, calibrées sur mon niveau réel

@@ -8,17 +8,20 @@ Neuf projets de difficulté croissante. Chacun suit le même déroulé :
 4. **Tests à écrire** — la liste minimale, à compléter.
 5. **Revue de code** — verdict sur les quatre axes de qualité.
 
-| # | Projet | Après le niveau | Compétences visées |
-|---|---|---|---|
-| 1 | [CLI simple](projet-01-cli-simple/) | 1 | Syntaxe, slices, maps, structs, erreurs, séparation calcul/E-S |
-| 2 | [Gestionnaire de tâches CLI](projet-02-gestionnaire-taches/) | 2 | Packages, persistance, erreurs enveloppées, conception d'API |
-| 3 | [API REST avec tests](projet-03-api-rest/) | 3 et 5 | `net/http`, JSON, table-driven tests, middleware |
-| 4 | [API avec PostgreSQL](projet-04-api-postgresql/) | 6 | `database/sql`, transactions, migrations, repository |
-| 5 | [Serveur concurrent](projet-05-serveur-concurrent/) | 4 | Goroutines, channels, `context`, arrêt gracieux |
-| 6 | [Service avec authentification](projet-06-service-auth/) | 5 | Sessions/JWT, hachage, sécurité, gestion d'erreurs HTTP |
-| 7 | [Workers et queues](projet-07-workers-queues/) | 7 | Worker pool, idempotence, retries, backpressure |
-| 8 | [Microservice professionnel](projet-08-microservice/) | 9 | Docker, CI/CD, `slog`, métriques, OpenTelemetry |
-| — | [Projet final](projet-final/) | 10 | Démonstration d'un niveau senior/expert |
+| Ordre | # | Projet | Après le niveau | Compétences visées |
+|---|---|---|---|---|
+| 1er | 1 | [CLI simple](projet-01-cli-simple/) | 2 | Syntaxe, slices, maps, structs, erreurs, découpage en fichiers |
+| 2e | 2 | [Gestionnaire de tâches CLI](projet-02-gestionnaire-taches/) | 4 | Fichiers, JSON, temps, erreurs enveloppées, conception d'API |
+| 3e | 5 | [Serveur concurrent](projet-05-serveur-concurrent/) | 6 | Goroutines, channels, `context`, arrêt gracieux |
+| 4e | 3 | [API REST avec tests](projet-03-api-rest/) | 7 | `net/http`, JSON, table-driven tests, middleware |
+| 5e | 4 | [API avec PostgreSQL](projet-04-api-postgresql/) | 8 | `database/sql`, transactions, migrations, repository |
+| 6e | 6 | [Service avec authentification](projet-06-service-auth/) | 8 | Sessions/JWT, hachage, sécurité, erreurs HTTP |
+| 7e | 7 | [Workers et queues](projet-07-workers-queues/) | 10 | Worker pool, idempotence, retries, backpressure |
+| 8e | 8 | [Microservice professionnel](projet-08-microservice/) | 12 | Docker, CI/CD, `slog`, métriques, OpenTelemetry |
+| 9e | — | [Projet final](projet-final/) | 13 | Démonstration d'un niveau senior/expert |
+
+La **numérotation** est celle du programme initial ; la colonne **Ordre** donne la
+chronologie réelle, qui suit les prérequis techniques.
 
 **Mon code de projet va dans `mes-solutions/projets/`** — ignoré par git, comme le reste
 de mon code d'apprentissage. Les spécifications, elles, restent versionnées ici.

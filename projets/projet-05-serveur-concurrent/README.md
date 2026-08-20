@@ -1,6 +1,6 @@
 # Projet 5 — Serveur concurrent
 
-**À réaliser après le niveau 4.**
+**À réaliser après le niveau 6.**
 
 > 🔜 **Spécifications pas encore rédigées.**
 > Elles seront écrites au moment d'aborder ce projet, calibrées sur mon niveau réel

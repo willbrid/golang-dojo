@@ -163,8 +163,10 @@ const (
 	Error
 )
 
-// String rend Severity lisible. fmt l'appelle automatiquement (leçon 10).
-func (s Severity) String() string {
+// severityName rend Severity lisible.
+// C'est une FONCTION et non une méthode : les méthodes arrivent au niveau 2.
+// On verra alors qu'une méthode String() serait appelée automatiquement par fmt.
+func severityName(s Severity) string {
 	switch s {
 	case Debug:
 		return "DEBUG"
@@ -185,8 +187,8 @@ func main() {
 	level := Warning            // type déduit : Severity
 	ratio := float64(attempt) / float64(maxRetries) // conversions explicites obligatoires
 
-	fmt.Printf("niveau=%v tentative=%d/%d ratio=%.2f\n", level, attempt, maxRetries, ratio)
-	fmt.Printf("%v %d %q %T\n", level, level, level.String(), level)
+	fmt.Printf("niveau=%s tentative=%d/%d ratio=%.2f\n", severityName(level), attempt, maxRetries, ratio)
+	fmt.Printf("%d %q %T\n", level, severityName(level), level)
 }
 ```
 
@@ -196,10 +198,10 @@ func main() {
 |---|---|
 | `type Severity int` | Crée un **type distinct** basé sur `int`. `Severity` et `int` ne sont pas interchangeables sans conversion : c'est ce qui rend l'énumération utile. |
 | `Debug Severity = iota` | Le type et l'expression se répètent implicitement sur les lignes suivantes. |
-| `default:` dans `String()` | Traite les valeurs hors énumération. Sans lui, `Severity(42)` renverrait `""`, ce qui masque le bug. |
+| `default:` dans `severityName` | Traite les valeurs hors énumération. Sans lui, `Severity(42)` renverrait `""`, ce qui masquerait le bug. |
 | `float64(attempt)` | Conversion explicite. Diviser deux `int` donnerait une **division entière** : `0/3 = 0`, pas `0.0`. Piège fréquent. |
 | `%v` `%d` `%q` `%T` | Format par défaut · entier décimal · chaîne entre guillemets · **type** de la valeur. `%T` est l'outil de débogage n°1 du débutant. |
-| `%v` sur `level` | Affiche `WARN` et non `2`, parce que `Severity` possède une méthode `String()`. |
+| `%d` sur `level` | Affiche `2` : sans méthode `String()`, `fmt` ne sait rien du sens de la valeur. C'est précisément ce que le niveau 2 corrigera. |
 
 ## Erreurs fréquentes
 
@@ -227,7 +229,8 @@ func main() {
 - Constantes **non typées** par défaut : elles sont plus souples. Ne typer que pour créer
   une énumération ou contraindre volontairement.
 - Grouper les constantes liées dans un bloc `const` unique.
-- Un type d'énumération mérite une méthode `String()` — l'outil `stringer` peut la générer.
+- Un type d'énumération mérite une représentation textuelle ; au niveau 2, ce sera une
+  méthode `String()`, que l'outil `stringer` sait générer.
 - `_` (le « trou noir ») pour ignorer explicitement une valeur : `_, err := f()`.
 
 ## Ce que je dois retenir

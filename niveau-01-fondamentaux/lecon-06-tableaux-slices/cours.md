@@ -174,6 +174,8 @@ moderne**. On y reviendra au niveau 2 (ces fonctions sont génériques).
 
 ## Exemple
 
+Aucune fonction passée en paramètre ici : les types fonction arrivent à la leçon 11.
+
 ```go
 package main
 
@@ -182,24 +184,24 @@ import (
 	"slices"
 )
 
-// Filter retourne un NOUVEAU slice avec les éléments satisfaisant keep.
+// Evens retourne un NOUVEAU slice avec les nombres pairs.
 // L'original n'est jamais modifié : contrat explicite et sans surprise.
-func Filter(nums []int, keep func(int) bool) []int {
-	out := make([]int, 0, len(nums)) // préallocation : une seule allocation au lieu de log(n)
+func Evens(nums []int) []int {
+	out := make([]int, 0, len(nums)) // préallocation : une seule allocation
 	for _, n := range nums {
-		if keep(n) {
+		if n%2 == 0 {
 			out = append(out, n)
 		}
 	}
 	return out
 }
 
-// FilterInPlace filtre SANS allouer, en réutilisant le tableau sous-jacent.
+// EvensInPlace filtre SANS allouer, en réutilisant le tableau sous-jacent.
 // Attention : l'appelant perd l'original. Le nom doit le dire.
-func FilterInPlace(nums []int, keep func(int) bool) []int {
+func EvensInPlace(nums []int) []int {
 	out := nums[:0] // len=0, même tableau, même capacité
 	for _, n := range nums {
-		if keep(n) {
+		if n%2 == 0 {
 			out = append(out, n)
 		}
 	}
@@ -207,14 +209,14 @@ func FilterInPlace(nums []int, keep func(int) bool) []int {
 }
 
 func describe(label string, s []int) {
-	fmt.Printf("%-12s %v len=%d cap=%d\n", label, s, len(s), cap(s))
+	fmt.Printf("%-14s %v len=%d cap=%d\n", label, s, len(s), cap(s))
 }
 
 func main() {
 	base := []int{1, 2, 3, 4, 5, 6}
 	describe("base", base)
 
-	even := Filter(base, func(n int) bool { return n%2 == 0 })
+	even := Evens(base)
 	describe("even", even)
 	describe("base après", base) // inchangé
 
@@ -224,11 +226,27 @@ func main() {
 	window[0] = 99
 	describe("base modifié", base)
 
-	// La parade : borner la capacité
+	// Le piège d'append sur un sous-slice
+	part := base[1:3]
+	part = append(part, 42) // len(2) < cap(5) : écrit DANS base
+	describe("part", part)
+	describe("base écrasé", base)
+
+	// La parade : borner la capacité, ou copier franchement
 	safe := slices.Clone(base[1:3])
 	safe[0] = -1
 	describe("safe", safe)
 	describe("base intact", base)
+
+	bounded := base[1:3:3]              // len=2 cap=2
+	bounded = append(bounded, 7)        // capacité atteinte → réalloue
+	describe("bounded", bounded)
+	describe("base intact", base)
+
+	// EvensInPlace DÉTRUIT son entrée : à n'utiliser qu'en connaissance de cause
+	scratch := []int{1, 2, 3, 4, 5, 6}
+	describe("in place", EvensInPlace(scratch))
+	describe("scratch", scratch) // les premiers éléments ont été réécrits
 }
 ```
 
@@ -237,10 +255,12 @@ func main() {
 | Élément | Ce qui compte |
 |---|---|
 | `make([]int, 0, len(nums))` | `len=0`, `cap` suffisante : `append` ne réallouera jamais. Sur un million d'éléments, l'écart est mesurable. |
+| `base[1:3:3]` | Le troisième indice **borne la capacité** : `append` est alors forcé de réallouer, et l'original est protégé. |
 | `out := nums[:0]` | Astuce idiomatique : longueur nulle, même tableau. On réécrit par-dessus l'original en le parcourant — c'est sûr car on n'écrit jamais plus loin qu'on n'a lu. |
 | `cap(window)` = 5 | La capacité s'étend jusqu'à la fin du tableau sous-jacent, pas jusqu'à la fin de la fenêtre. |
 | `slices.Clone` | Copie explicite : l'appelant est protégé. |
-| Nommage `FilterInPlace` | Une fonction qui modifie son argument **doit** le dire dans son nom. Contrat implicite = bug futur. |
+| Nommage `EvensInPlace` | Une fonction qui modifie son argument **doit** le dire dans son nom. Contrat implicite = bug futur. |
+| `scratch` après l'appel | L'entrée est réécrite sur place : c'est le prix de l'absence d'allocation. |
 
 ## Erreurs fréquentes
 

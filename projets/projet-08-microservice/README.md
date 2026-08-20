@@ -1,6 +1,6 @@
 # Projet 8 — Microservice Go professionnel
 
-**À réaliser après le niveau 9.**
+**À réaliser après le niveau 12.**
 
 > 🔜 **Spécifications pas encore rédigées.**
 > Elles seront écrites au moment d'aborder ce projet, calibrées sur mon niveau réel

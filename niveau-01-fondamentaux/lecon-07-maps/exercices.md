@@ -66,25 +66,30 @@ par longueur (attention : la clé doit rester une `string`), puis par **anagramm
 (deux mots sont anagrammes s'ils ont les mêmes lettres). Le troisième cas est le vrai
 exercice : quelle fonction de clé caractérise un anagramme ?
 
-**b) LRU cache** — implémenter un cache à éviction *least recently used* :
-```go
-type LRU struct { /* … */ }
-func NewLRU(capacity int) (*LRU, error)
-func (c *LRU) Get(key string) (int, bool)
-func (c *LRU) Put(key string, value int)
-func (c *LRU) Len() int
-```
-**Contraintes :**
-- `Get` et `Put` doivent être en **O(1) amorti** — une map seule ne suffit pas, il faut une
-  seconde structure pour l'ordre d'usage. Laquelle ? (`container/list` existe, mais essayer
-  de raisonner d'abord sur ce qui est nécessaire.)
-- Un `Get` compte comme un usage et rafraîchit l'entrée.
-- `Put` d'une clé existante met à jour la valeur **et** rafraîchit.
-- Capacité 0 ou négative : erreur.
-- Écrire dans `main` un scénario prouvant l'éviction correcte sur au moins huit opérations.
+**b) Opérations d'ensemble.**
+Écrire `Union`, `Intersection`, `Difference` et `SymmetricDifference` sur des
+`map[string]bool`. Puis `IsSubset(a, b) bool`.
 
-*Le LRU est l'exercice d'entretien le plus demandé au monde. Le faire une fois
-sérieusement, sans regarder de solution, vaut dix exercices faciles.*
+**Contraintes :** aucune fonction ne modifie ses arguments ; toutes préallouent quand c'est
+possible ; `Intersection` doit itérer sur **le plus petit** des deux ensembles — expliquer
+pourquoi en commentaire, avec l'ordre de complexité obtenu dans les deux cas.
+
+**c) Compteur de fréquences déterministe.**
+Écrire `TopN(counts map[string]int, n int) []string` retournant les `n` clés les plus
+fréquentes, **avec un ordre totalement déterministe** : fréquence décroissante, puis ordre
+alphabétique en cas d'égalité.
+
+Puis démontrer le bug : écrire une version **sans** le départage alphabétique, l'exécuter
+vingt fois sur des données comportant des ex æquo, et montrer que la sortie change. C'est
+exactement ainsi qu'un test passe en local et échoue une fois sur dix en intégration
+continue.
+
+**d) Coût mémoire.**
+Comparer la mémoire occupée par `map[int]bool` et `[]bool` pour représenter l'ensemble des
+entiers de 0 à 1 000 000. Mesurer avec `runtime.ReadMemStats`. **Prédire l'ordre de grandeur
+avant de mesurer.**
+Puis répondre : dans quel cas le `[]bool` cesse-t-il d'être le bon choix ? *(Penser à un
+ensemble contenant trois entiers, dont l'un vaut deux milliards.)*
 
 ---
 
@@ -98,5 +103,5 @@ sérieusement, sans regarder de solution, vaut dix exercices faciles.*
 6. `&m["k"]` compile-t-il ? Pourquoi ?
 7. Que se passe-t-il si deux goroutines écrivent en même temps dans une map ?
 8. `delete(m, k)` sur une clé absente : erreur, panique, ou rien ?
-9. Différence entre `map[string]bool` et `map[string]struct{}` pour représenter un ensemble ?
+9. Comment représente-t-on un ensemble en Go ? Quelle forme privilégier, et pourquoi ?
 10. Passer une map à une fonction qui la modifie : l'appelant voit-il les changements ?

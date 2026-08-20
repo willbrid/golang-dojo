@@ -20,7 +20,7 @@ Vérifiée auprès des sources officielles : [go.dev/VERSION](https://go.dev/VER
 │   └── lecon-01-environnement/
 │       ├── cours.md             Le cours : explications, exemples, pièges
 │       └── exercices.md         Les exercices et le quiz — sans les réponses
-├── niveau-02-go-idiomatique/    …
+├── niveau-02-types-abstraction/ …
 ├── …
 ├── projets/                     Les 9 projets, spécifications et contraintes
 └── mes-solutions/               MON code d'apprentissage — ignoré par git, jamais poussé
@@ -85,22 +85,32 @@ go version
 
 ## Le parcours en un coup d'œil
 
-| Niveau | Thème | Leçons | Projet associé |
+| Niveau | Thème | Leçons | Projet à la sortie |
 |---|---|---|---|
-| 1 | [Fondamentaux](niveau-01-fondamentaux/) | 11 | Projet 1 — CLI simple |
-| 2 | [Go idiomatique](niveau-02-go-idiomatique/) | 11 | Projet 2 — Gestionnaire de tâches |
-| 3 | [Tests et qualité](niveau-03-tests-qualite/) | 8 | — |
-| 4 | [Concurrence](niveau-04-concurrence/) | 11 | Projet 5 — Serveur concurrent |
-| 5 | [Réseau et backend](niveau-05-reseau-backend/) | 12 | Projets 3 et 6 — API REST, auth |
-| 6 | [Bases de données](niveau-06-bases-de-donnees/) | 8 | Projet 4 — API + PostgreSQL |
-| 7 | [Architecture](niveau-07-architecture/) | 10 | Projet 7 — Workers et queues |
-| 8 | [Performance](niveau-08-performance/) | 8 | — |
-| 9 | [Outils et production](niveau-09-outils-production/) | 9 | Projet 8 — Microservice |
-| 10 | [Expert](niveau-10-expert/) | 8 | Projet final |
+| 1 | [Fondamentaux du langage](niveau-01-fondamentaux/) | 11 | — |
+| 2 | [Types, méthodes et abstraction](niveau-02-types-abstraction/) | 10 | Projet 1 — CLI simple |
+| 3 | [Go moderne et génériques](niveau-03-go-moderne-generiques/) | 6 | — |
+| 4 | [Bibliothèque standard essentielle](niveau-04-bibliotheque-standard/) | 8 | Projet 2 — Gestionnaire de tâches |
+| 5 | [Tests et qualité](niveau-05-tests-qualite/) | 8 | — |
+| 6 | [Concurrence et coordination](niveau-06-concurrence/) | 12 | Projet 5 — Serveur concurrent |
+| 7 | [Réseau, HTTP et services](niveau-07-reseau-http/) | 12 | Projet 3 — API REST |
+| 8 | [Bases de données](niveau-08-bases-de-donnees/) | 8 | Projets 4 et 6 — PostgreSQL, auth |
+| 9 | [Réflexion et métaprogrammation](niveau-09-reflexion/) | 4 | — |
+| 10 | [Architecture](niveau-10-architecture/) | 10 | Projet 7 — Workers et queues |
+| 11 | [Performance](niveau-11-performance/) | 8 | — |
+| 12 | [Outils et production](niveau-12-outils-production/) | 9 | Projet 8 — Microservice |
+| 13 | [Expert](niveau-13-expert/) | 8 | Projet final |
 
-Détail complet dans [SYLLABUS.md](SYLLABUS.md).
+Détail complet, ordre des leçons et correspondance avec les chapitres de *Pro Go* dans
+[SYLLABUS.md](SYLLABUS.md).
 
----
+### L'ordre est une contrainte, pas une suggestion
+
+Le parcours respecte une règle stricte : **aucune leçon n'utilise un concept qui n'a pas
+encore été vu**. C'est ce qui explique quelques choix inhabituels — pointeurs avant structs,
+méthodes avant interfaces, erreurs en deux temps (usage au niveau 1, mécanique au niveau 2,
+parce qu'`error` *est* une interface). Le tableau des décisions d'ordonnancement et leurs
+raisons est en tête du [SYLLABUS](SYLLABUS.md#principe-dordonnancement).
 
 ## Les quatre niveaux de qualité
 
