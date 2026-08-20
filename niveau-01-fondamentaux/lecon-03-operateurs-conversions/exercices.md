@@ -76,13 +76,15 @@ la valeur ne tient pas dans le type cible. Puis répondre par écrit : combien d
 faudrait-il pour couvrir toutes les paires de types numériques ? Qu'est-ce que ça dit du
 besoin de génériques (niveau 3) ?
 
-**c) Un piège de précédence.** Ce code compile et est faux :
+**c) Précédence : Go contre C.**
 ```go
-const mask = 0b1010
 func hasBit(v, bit int) bool { return v & bit == bit }
 ```
-Expliquer précisément pourquoi il compile alors que `a & b == 0` ne compilait pas dans le
-cours, et dire s'il est réellement correct. *(Le raisonnement importe plus que la réponse.)*
+Ce code est-il correct en Go ? Le serait-il en C ? Écrire l'équivalent C mentalement et
+comparer.
+Puis lancer `gofmt` dessus et observer **comment l'espacement change**. Qu'est-ce que le
+formateur vient de communiquer ? Trouver deux autres expressions où `gofmt` révèle ainsi la
+précédence.
 
 ---
 
@@ -92,7 +94,7 @@ cours, et dire s'il est réellement correct. *(Le raisonnement importe plus que 
 2. Que vaut `-7 % 3` en Go ? Et en Python ? Pourquoi cette différence compte-t-elle ?
 3. `x := i++` compile-t-il ?
 4. Que fait `a &^ b` ? Existe-t-il en C ?
-5. Quelle est la précédence de `&` par rapport à `==` ?
+5. Quelle est la précédence de `&` par rapport à `==` en Go ? Et en C ?
 6. Une conversion `byte(300)` sur une **variable** : erreur, panique, ou valeur surprenante ?
 7. Quelle différence entre `string(65)` et `strconv.Itoa(65)` ?
 8. Quelle différence entre `%s` et `%q` sur une chaîne ? Quand `%q` est-il indispensable ?
