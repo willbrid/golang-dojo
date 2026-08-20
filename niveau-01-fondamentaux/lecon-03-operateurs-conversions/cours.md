@@ -128,15 +128,21 @@ Go n'a que **cinq** niveaux, contre quinze en C :
 1 :  ||
 ```
 
-À noter : `&` a la même précédence que `*`, et `|` que `+`. Cela réserve une surprise :
+À noter : `&` a la même précédence que `*`, et `|` que `+`. **C'est une correction délibérée
+d'un défaut du C**, où `&` lie moins fort que `==` :
 
 ```go
-a & b == 0     // se lit  a & (b == 0)  → ne compile pas
-(a & b) == 0   // ce qu'on voulait
+// En C : a & b == 0  se lit  a & (b == 0)  → bug classique, gcc -Wparentheses le signale
+// En Go : a & b == 0  se lit  (a & b) == 0 → ce que tout le monde attend
+if a&b == 0 { … }   // correct, et c'est ainsi que gofmt l'écrit
 ```
 
-Conseil : parenthéser dès qu'une expression mêle binaire et comparaison. `gofmt` conserve
-les parenthèses ; il ne les considère pas comme du bruit.
+Observer l'espacement produit par `gofmt` : il resserre les espaces autour de l'opérateur le
+plus prioritaire (`a&b == 0`, `x*2 + y`, `i < n-1`). C'est un **indice visuel de précédence**,
+gratuit et fiable — prendre l'habitude de le lire dispense de mémoriser la table.
+
+Parenthéser reste utile dès que l'expression se complique (`(a&mask)|(b<<2) != 0`), mais pour
+du binaire face à une comparaison, Go fait ce qu'on attend.
 
 ### Conversions numériques
 
@@ -340,7 +346,7 @@ func main() {
 2. **`float64(a/b)`** au lieu de `float64(a)/float64(b)`.
 3. **Croire que `%` est toujours positif** : `-7%3` vaut `-1`.
 4. **`x := i++`** : `++` n'est pas une expression en Go.
-5. **Oublier les parenthèses** dans `a & b == 0`.
+5. **Appliquer par réflexe la précédence du C** : en Go, `&` lie **plus** fort que `==`, pas moins.
 6. **`string(n)`** au lieu de `strconv.Itoa(n)`.
 7. **Ignorer l'erreur de `strconv`** : `n, _ := strconv.Atoi(s)` transforme une saisie invalide en `0` silencieux.
 8. **Conversion qui tronque** sans validation : `byte(n)` sur une valeur venue de l'extérieur.
@@ -351,7 +357,7 @@ func main() {
 
 - Convertir vers le type le plus large **avant** de calculer, pas après.
 - Valider explicitement toute conversion rétrécissante sur une donnée non maîtrisée.
-- Parenthéser les expressions mêlant opérateurs binaires et comparaisons.
+- Lire l'espacement de `gofmt` comme un indicateur de précédence ; parenthéser les expressions binaires complexes.
 - Toujours traiter l'erreur de `strconv` : c'est une frontière avec le monde extérieur.
 - `%q` plutôt que `%s` pour déboguer une chaîne : les espaces et tabulations deviennent visibles.
 - `%+v` et `%T` en premier réflexe de diagnostic.
@@ -363,7 +369,7 @@ func main() {
 - `/` entre entiers est une **division entière** ; `%` prend le signe du **dividende**.
 - `++` et `--` sont des **instructions**, jamais des expressions.
 - `&^` (*bit clear*) est spécifique à Go et sert à retirer des drapeaux.
-- `&` a la précédence de `*`, `|` celle de `+` : parenthéser près des comparaisons.
+- `&` a la précédence de `*`, `|` celle de `+` — **l'inverse du C**, dont Go corrige ici un piège célèbre.
 - Une conversion numérique qui déborde **tronque en silence**.
 - `strconv` ≠ conversion de type : c'est une analyse qui peut **échouer**.
 - `%v`, `%+v`, `%#v`, `%T`, `%q` : les cinq verbes du quotidien.
