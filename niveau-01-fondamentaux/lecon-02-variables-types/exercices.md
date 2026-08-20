@@ -6,7 +6,9 @@ Code dans `mes-solutions/niveau-01/lecon-02/`.
 
 **E1 — Zéro-valeurs.**
 Déclarer sans les initialiser une variable de chaque type : `int`, `float64`, `bool`,
-`string`, `[]int` (slice), `map[string]int`, `*int` (pointeur). Afficher chacune avec
+`string`, `[3]int` (tableau), `[]int` (slice), `map[string]int`, `*int` (pointeur) — les
+trois derniers types ne seront étudiés qu'aux leçons 6, 7 et au niveau 2, mais leur
+**zéro-valeur** s'observe dès maintenant. Afficher chacune avec
 `fmt.Printf("%v %q %T\n", …)` et **prédire la sortie avant de l'exécuter**. Noter les écarts.
 
 **E2 — Conversions.**
@@ -25,7 +27,8 @@ Pour chacune : le compilateur refuse-t-il, ou accepte-t-il en produisant un rés
 
 **E3 — `iota`.**
 Créer un type `Planet` et une énumération des huit planètes, avec `Mercury = 1` (et non 0).
-Ajouter une méthode `String()`. Afficher les huit valeurs.
+Ajouter une **fonction** `planetName(p Planet) string` — les méthodes arrivent au niveau 2.
+Afficher les huit valeurs, puis `Planet(99)` : que doit-il se passer ?
 
 **E4 — Constantes non typées.**
 Expliquer pourquoi ceci compile :
@@ -63,7 +66,7 @@ $ go run . 5368709120
 2. Le programme affiche l'unité la plus grande **pertinente** (pas de `0.00 GiB`).
 3. Une valeur négative ou non numérique produit une erreur claire ; sortie avec le code 1.
 4. Gérer une valeur allant jusqu'à `math.MaxInt64` sans dépassement ni perte de précision — **prouver** que c'est le cas.
-5. Un type `ByteSize` avec une méthode `String()` fait tout le travail de formatage ; `main` ne formate rien lui-même.
+5. Un type `ByteSize` et une **fonction** `format(b ByteSize) string` font tout le travail ; `main` ne formate rien lui-même. *(Au niveau 2, cette fonction deviendra une méthode `String()` et `fmt` l'appellera toute seule — noter dès maintenant ce que cela changera.)*
 
 *Question à trancher avant de coder : `1536 / 1024` en entier donne `1`. Comment obtenir
 `1.50` sans introduire d'erreur d'arrondi sur les grandes valeurs ?*

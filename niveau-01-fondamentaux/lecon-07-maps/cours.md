@@ -33,16 +33,17 @@ m["x"] = 1             // PANIQUE : assignment to entry in nil map
 ```
 
 Contrairement au slice `nil` sur lequel `append` fonctionne, on ne peut **pas** écrire dans
-une map `nil`. C'est la première cause de panique chez les débutants, en général via un
-champ de struct oublié :
+une map `nil`. C'est la première cause de panique chez les débutants, en général via une map
+qu'on a déclarée sans l'initialiser :
 
 ```go
-type Cache struct { data map[string]int }
-c := Cache{}      // c.data est nil
-c.data["k"] = 1   // PANIQUE
+var counts map[string]int   // nil
+counts["a"]++               // PANIQUE : assignment to entry in nil map
 ```
 
-Toujours initialiser une map dans son constructeur.
+Toujours créer la map avant d'y écrire — avec `make` ou un littéral. Au niveau 2, on verra
+que le cas le plus fréquent est une map **champ d'un type** qu'on a oublié d'initialiser à la
+construction.
 
 ### Lecture : la zéro-valeur masque l'absence
 
@@ -117,22 +118,20 @@ Le type de clé doit être **comparable** avec `==` :
 |---|---|
 | `string`, tous les numériques, `bool` | `[]T` (slice) |
 | pointeurs, channels | `map[K]V` |
-| interfaces | fonctions |
-| structs et tableaux **dont tous les champs sont comparables** | struct contenant un slice |
+| tableaux `[N]T` dont les éléments sont comparables | fonctions |
 
 ```go
-type Point struct{ X, Y int }
-m := map[Point]string{{1, 2}: "origine décalée"}   // OK : struct comparable
-
-type Bad struct{ Data []byte }
-m2 := map[Bad]string{}    // ERREUR de compilation : invalid map key type
+m := map[[2]int]string{{1, 2}: "point"}   // OK : un TABLEAU est comparable
+// m2 := map[[]int]string{}               // ERREUR : invalid map key type
 ```
 
-Deux subtilités :
-- Utiliser une **interface** comme clé compile toujours, mais panique à l'exécution si la
-  valeur dynamique n'est pas comparable (`map[any]string` avec un slice dedans).
-- `NaN` comme clé flottante est pathologique : `NaN != NaN`, donc la valeur devient
-  irrécupérable. Ne jamais utiliser de flottants en clés.
+Au niveau 2 s'ajouteront les **structs** (comparables si tous leurs champs le sont) et les
+**interfaces** (qui compilent toujours mais peuvent paniquer à l'exécution si la valeur
+dynamique n'est pas comparable).
+
+Une subtilité à connaître dès maintenant : `NaN` comme clé flottante est pathologique,
+puisque `NaN != NaN` — la valeur devient irrécupérable. Ne jamais utiliser de flottants en
+clés.
 
 ### Ce qu'une map n'est pas
 
@@ -145,26 +144,25 @@ Deux subtilités :
   valeur est une struct. Il faut lire, modifier, réécrire — ou stocker des pointeurs
   (`map[string]*User`).
 
-### L'ensemble (`set`) : `map[T]struct{}` ou `map[T]bool` ?
+### L'ensemble (`set`)
 
-Go n'a pas de type ensemble. Deux conventions :
+Go n'a pas de type ensemble. La convention est une map dont la valeur ne sert à rien :
 
 ```go
-set := map[string]struct{}{}     // 0 octet par valeur
-set["a"] = struct{}{}
-_, exists := set["a"]
-
-set2 := map[string]bool{}        // 1 octet par valeur
-set2["a"] = true
-if set2["a"] { … }               // plus lisible
+set := map[string]bool{}
+set["a"] = true
+if set["a"] { … }              // lisible : une clé absente donne false
+delete(set, "a")
 ```
 
-`struct{}` est le type vide : il n'occupe **aucun** octet. Sur un ensemble d'un million
-d'entrées, l'économie est réelle mais modeste. `map[T]bool` se lit mieux et permet
-`if set[k]` directement. **Recommandation : `map[T]bool` par défaut**, `struct{}{}` quand
-la mémoire compte vraiment et que le code est bien commenté.
+Une seconde forme existe, `map[T]struct{}`, qui n'occupe aucun octet par valeur. Elle utilise
+le type vide `struct{}`, que l'on comprendra pleinement au niveau 2. **Recommandation :
+`map[T]bool` par défaut** — la lisibilité l'emporte, et l'économie de mémoire ne compte que
+sur des ensembles de plusieurs millions d'entrées.
 
 ## Exemple
+
+Aucune fonction passée en paramètre ici : les types fonction arrivent à la leçon 11.
 
 ```go
 package main
@@ -189,35 +187,52 @@ func WordCount(text string) map[string]int {
 	return counts
 }
 
-// TopN retourne les n mots les plus fréquents, ordre déterministe garanti :
-// fréquence décroissante, puis alphabétique en cas d'égalité.
-func TopN(counts map[string]int, n int) []string {
-	words := slices.Collect(maps.Keys(counts)) // Go 1.23+ : itérateur → slice
-
-	slices.SortFunc(words, func(a, b string) int {
-		if counts[a] != counts[b] {
-			return counts[b] - counts[a] // décroissant
+// MostFrequent retourne le mot le plus fréquent.
+// En cas d'égalité, le plus petit dans l'ordre alphabétique gagne : la sortie
+// est ainsi DÉTERMINISTE, ce que l'itération d'une map ne garantit jamais.
+func MostFrequent(counts map[string]int) (string, int, bool) {
+	best, bestN := "", 0
+	found := false
+	for _, w := range slices.Sorted(maps.Keys(counts)) { // ordre stable garanti
+		if !found || counts[w] > bestN {
+			best, bestN, found = w, counts[w], true
 		}
-		return strings.Compare(a, b) // départage stable
-	})
+	}
+	return best, bestN, found
+}
 
-	return words[:min(n, len(words))] // min est intégré depuis Go 1.21
+// Vocabulary retourne l'ensemble des mots distincts, sous forme d'ensemble.
+func Vocabulary(counts map[string]int) map[string]bool {
+	set := make(map[string]bool, len(counts))
+	for w := range counts { // seule la clé nous intéresse
+		set[w] = true
+	}
+	return set
 }
 
 func main() {
 	text := "Le chat dort. Le chien dort aussi, et le chat rêve."
 	counts := WordCount(text)
 
-	for _, w := range TopN(counts, 3) {
+	// Sortie déterministe : on trie les clés (l'ordre d'une map est aléatoire)
+	for _, w := range slices.Sorted(maps.Keys(counts)) {
 		fmt.Printf("%-8s %d\n", w, counts[w])
 	}
 
+	if w, n, ok := MostFrequent(counts); ok {
+		fmt.Printf("\nmot le plus fréquent : %q (%d fois)\n", w, n)
+	}
+
+	// L'idiome « virgule ok »
 	if n, ok := counts["chat"]; ok {
-		fmt.Printf("\n« chat » apparaît %d fois\n", n)
+		fmt.Printf("« chat » apparaît %d fois\n", n)
 	}
 	if _, ok := counts["souris"]; !ok {
 		fmt.Println("« souris » est absent")
 	}
+
+	vocab := Vocabulary(counts)
+	fmt.Printf("%d mots distincts ; « dort » connu : %v\n", len(vocab), vocab["dort"])
 }
 ```
 
@@ -226,10 +241,10 @@ func main() {
 | Élément | Ce qui compte |
 |---|---|
 | `counts[w]++` | Fonctionne sur une clé absente : lecture → 0, incrément → 1. Idiome central du comptage. |
-| `slices.Collect(maps.Keys(counts))` | `maps.Keys` retourne un **itérateur** (Go 1.23+), `slices.Collect` le matérialise. Avant : une boucle `append` manuelle. |
-| `slices.SortFunc` avec départage | Sans le `strings.Compare` final, deux mots de même fréquence sortiraient dans un ordre **aléatoire** : la sortie ne serait pas reproductible. Point de qualité, pas de style. |
-| `counts[b] - counts[a]` | Convention de `SortFunc` : négatif si `a` avant `b`. *(Attention : la soustraction peut déborder sur de très grands entiers ; `cmp.Compare` est plus sûr.)* |
-| `min(n, len(words))` | `min` et `max` sont des fonctions **intégrées** depuis Go 1.21, sans import. |
+| `slices.Sorted(maps.Keys(counts))` | `maps.Keys` retourne un **itérateur** (Go 1.23+), `slices.Sorted` le consomme en slice trié. C'est l'idiome moderne pour parcourir une map dans un ordre stable. |
+| Le parcours trié dans `MostFrequent` | Sans lui, deux mots de même fréquence donneraient un gagnant **différent à chaque exécution** : le test passerait en local et échouerait un jour en intégration continue. Point de qualité, pas de style. |
+| `for w := range counts` | Avec une seule variable, `range` sur une map ne donne que **la clé**. |
+| `make(map[string]bool, len(counts))` | Préallocation : évite les rehachages successifs. |
 | `if _, ok := …; !ok` | Test d'absence pur : la valeur est ignorée avec `_`. |
 
 ## Erreurs fréquentes

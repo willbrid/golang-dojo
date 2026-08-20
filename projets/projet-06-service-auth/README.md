@@ -1,6 +1,6 @@
 # Projet 6 — Service backend complet avec authentification
 
-**À réaliser après le niveau 5.**
+**À réaliser après le niveau 8.**
 
 > 🔜 **Spécifications pas encore rédigées.**
 > Elles seront écrites au moment d'aborder ce projet, calibrées sur mon niveau réel

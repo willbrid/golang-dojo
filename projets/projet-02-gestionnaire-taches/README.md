@@ -1,6 +1,6 @@
 # Projet 2 — Gestionnaire de tâches en ligne de commande avec sauvegarde
 
-**À réaliser après le niveau 2.**
+**À réaliser après le niveau 4.**
 
 > 🔜 **Spécifications pas encore rédigées.**
 > Elles seront écrites au moment d'aborder ce projet, calibrées sur mon niveau réel

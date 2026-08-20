@@ -1,6 +1,6 @@
 # Projet 1 — `wordstat`, un analyseur de texte en ligne de commande
 
-**À réaliser après le niveau 1.** Durée indicative : 3 à 6 heures.
+**À réaliser après le niveau 2.** Durée indicative : 3 à 6 heures.
 Écrire le code dans `mes-solutions/projets/projet-01/`.
 
 ---

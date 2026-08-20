@@ -47,34 +47,33 @@ Vérifier dans chaque cas que la modification de la copie n'affecte pas l'origin
 
 ---
 
-## Exercice intermédiaire — `ringbuffer`
+## Exercice intermédiaire — `slicelib`
 
-Implémenter un **buffer circulaire** de taille fixe : quand il est plein, chaque nouvel
-élément écrase le plus ancien.
+Une petite bibliothèque d'opérations sur les slices, **sans le paquet `slices`** : le but est
+de comprendre ce qu'il fait, pas de l'utiliser. Comparer ensuite chaque fonction à son
+équivalent de la bibliothèque standard.
 
 ```go
-type Ring struct {
-	// à concevoir — mais un seul slice alloué UNE fois, jamais réalloué
-}
-
-func NewRing(size int) (*Ring, error)
-func (r *Ring) Push(v int)        // écrase le plus ancien si plein
-func (r *Ring) Len() int          // nombre d'éléments réellement présents
-func (r *Ring) Slice() []int      // du plus ancien au plus récent
+func Chunk(s []int, size int) ([][]int, error)  // découpe en morceaux de taille size
+func Flatten(s [][]int) []int                   // aplatit
+func Insert(s []int, i int, vals ...int) []int  // insère à l'indice i
+func Delete(s []int, i, j int) []int            // supprime [i, j)
+func Zip(a, b []int) ([][2]int, error)          // apparie deux slices
+func Window(s []int, size int) [][]int          // fenêtres glissantes
 ```
 
 **Contraintes :**
-1. Le tableau sous-jacent est alloué **une seule fois** dans `NewRing`. Aucun `append` qui réalloue, jamais.
-2. `size <= 0` retourne une erreur.
-3. `Slice()` retourne une **copie** : l'appelant ne doit pas pouvoir corrompre l'état interne. *(Justifier ce choix en commentaire : quel bug cela évite-t-il ?)*
-4. `Slice()` sur un buffer vide retourne un slice vide (ou nil) et surtout **ne panique pas**.
-5. Le buffer doit fonctionner correctement après des milliers de `Push` — aucune fuite, aucun débordement d'indice.
-6. Écrire dans `main` au moins six scénarios : vide, partiellement rempli, exactement plein, un tour complet, deux tours, `size == 1`.
+1. **Aucune de ces fonctions ne doit modifier son entrée**, sauf `Insert` et `Delete` — pour lesquelles il faut **décider** si elles modifient sur place ou retournent un nouveau slice, et le **documenter** dans le commentaire. *(Regarder ce que fait `slices.Insert` avant de choisir.)*
+2. `Chunk` : le dernier morceau peut être plus court. `size <= 0` est une erreur.
+3. `Window` sur un slice plus court que `size` retourne un résultat vide, pas une erreur, et surtout ne panique pas.
+4. **Préallouer** partout où la taille finale est connue à l'avance. Justifier en commentaire quand ce n'est pas possible.
+5. `Chunk` et `Window` retournent des `[][]int` : décider si les sous-slices **partagent** le tableau d'origine ou en sont des copies. Les deux choix sont défendables — **écrire lequel et pourquoi**, puis le rendre vrai. *(C'est le cœur de l'exercice.)*
+6. Aucune fonction ne panique, quels que soient les indices reçus.
+7. Vérifier chaque fonction sur : slice vide, slice nil, un seul élément, indices aux bornes.
 
-*Cette structure reviendra au niveau 4 (fenêtre glissante de métriques) et au niveau 8
-(pooling). L'écrire correctement maintenant est un bon investissement.*
-
----
+*Après coup, lire le code source de `slices.Insert` et `slices.Delete` dans la bibliothèque
+standard (`go doc -src slices.Insert`). Comparer avec sa propre version : que fait la stdlib
+que l'on n'avait pas prévu ?*
 
 ## Défi
 

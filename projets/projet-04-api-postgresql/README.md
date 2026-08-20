@@ -1,6 +1,6 @@
 # Projet 4 — API avec PostgreSQL
 
-**À réaliser après le niveau 6.**
+**À réaliser après le niveau 8.**
 
 > 🔜 **Spécifications pas encore rédigées.**
 > Elles seront écrites au moment d'aborder ce projet, calibrées sur mon niveau réel

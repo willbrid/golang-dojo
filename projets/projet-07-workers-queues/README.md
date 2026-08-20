@@ -1,6 +1,6 @@
 # Projet 7 — Système avec workers et queues
 
-**À réaliser après le niveau 7.**
+**À réaliser après le niveau 10.**
 
 > 🔜 **Spécifications pas encore rédigées.**
 > Elles seront écrites au moment d'aborder ce projet, calibrées sur mon niveau réel
