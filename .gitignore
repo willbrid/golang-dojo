@@ -1,0 +1,29 @@
+# ---------------------------------------------------------------------------
+# Mes codes d'apprentissage : ils restent locaux, ils ne sont jamais poussés.
+# ---------------------------------------------------------------------------
+mes-solutions/
+
+# Binaires compilés
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+
+# Profils et sorties d'outils
+*.out
+*.prof
+*.pprof
+coverage.html
+
+# Répertoires d'espace de travail Go
+go.work
+go.work.sum
+vendor/
+
+# Éditeurs et OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
