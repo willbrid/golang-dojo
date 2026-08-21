@@ -1,4 +1,4 @@
-# Leçon 9 — Corrigé
+# Leçon 1 — Corrigé
 
 > ⚠️ À ne lire qu'après avoir essayé.
 
@@ -82,161 +82,186 @@ quand il s'agit de désérialisation JSON/SQL — parce que `encoding/json` gèr
 pointeur nil pour un champ absent. Le choix dépend donc du contexte, et c'est ce qu'il
 fallait argumenter.
 
-## Exercice intermédiaire — `linkedlist`
+## Exercice intermédiaire — `ptrlib`
 
 ```go
-package main
-
-type Node struct {
-	Value int
-	Next  *Node
-}
-
-// List est une liste chaînée simple.
-// head est non exporté : l'invariant « size correspond au nombre de nœuds »
-// ne peut être garanti que si personne d'autre ne peut modifier la chaîne.
-// La zéro-valeur (var l List) est immédiatement utilisable.
-type List struct {
-	head *Node
-	size int
-}
-
-func (l *List) Len() int { return l.size }
-
-func (l *List) PushFront(v int) {
-	l.head = &Node{Value: v, Next: l.head}
-	l.size++
-}
-
-func (l *List) PushBack(v int) {
-	n := &Node{Value: v}
-	l.size++
-	if l.head == nil {
-		l.head = n
-		return
+func Swap(a, b *int) {
+	if a == nil || b == nil {
+		return // ne jamais paniquer sur un nil : contrainte 1
 	}
-	cur := l.head
-	for cur.Next != nil {
-		cur = cur.Next
-	}
-	cur.Next = n
+	*a, *b = *b, *a
 }
 
-func (l *List) PopFront() (int, bool) {
-	if l.head == nil {
-		return 0, false
-	}
-	n := l.head
-	l.head = n.Next
-	n.Next = nil // coupe la référence : le nœud retiré ne retient plus la suite
-	l.size--
-	return n.Value, true
-}
-
-// Remove supprime la première occurrence de v.
-func (l *List) Remove(v int) bool {
-	// Le pointeur de pointeur élimine TOUS les cas particuliers :
-	// tête, milieu, queue, liste d'un seul élément — un seul chemin de code.
-	pp := &l.head
-	for *pp != nil {
-		if (*pp).Value == v {
-			*pp = (*pp).Next
-			l.size--
-			return true
+// Zero met à 0 tout ce qui est pointé, en ignorant les nil.
+func Zero(nums []*int) {
+	for _, p := range nums { // range sur un slice nil : zéro tour, aucun problème
+		if p != nil {
+			*p = 0
 		}
-		pp = &(*pp).Next
 	}
-	return false
 }
 
-func (l *List) Slice() []int {
-	out := make([]int, 0, l.size)
-	for cur := l.head; cur != nil; cur = cur.Next {
-		out = append(out, cur.Value)
+// Compact retire les nil en préservant l'ordre.
+// ATTENTION : réutilise le tableau sous-jacent, donc MODIFIE l'entrée.
+// L'appelant doit utiliser la valeur retournée et considérer nums comme invalide.
+func Compact(nums []*int) []*int {
+	out := nums[:0] // len 0, même tableau
+	for _, p := range nums {
+		if p != nil {
+			out = append(out, p)
+		}
+	}
+	// Mettre à nil la queue devenue inaccessible : sinon le tableau retient
+	// des pointeurs vers des objets que le GC pourrait libérer.
+	for i := len(out); i < len(nums); i++ {
+		nums[i] = nil
 	}
 	return out
 }
 
-// Reverse inverse la liste en place : seuls les pointeurs Next changent.
-func (l *List) Reverse() {
-	var prev *Node
-	cur := l.head
-	for cur != nil {
-		next := cur.Next // sauvegarder AVANT d'écraser
-		cur.Next = prev
-		prev = cur
-		cur = next
+func SumPtrs(nums ...*int) (sum, skipped int) {
+	for _, p := range nums {
+		if p == nil {
+			skipped++
+			continue
+		}
+		sum += *p
 	}
-	l.head = prev
+	return sum, skipped
+}
+
+// Increment crée l'entrée si elle est absente.
+func Increment(counters map[string]*int, key string) error {
+	if counters == nil {
+		return errors.New("map nil : écrire dedans paniquerait")
+	}
+	if p, ok := counters[key]; ok && p != nil {
+		*p++
+		return nil
+	}
+	n := 1
+	counters[key] = &n
+	return nil
+}
+
+// MinPtr retourne un pointeur VERS UN ÉLÉMENT du slice d'origine.
+// CHOIX DOCUMENTÉ : modifier *p modifie donc nums. C'est puissant et dangereux —
+// voir la discussion ci-dessous.
+func MinPtr(nums []int) *int {
+	if len(nums) == 0 {
+		return nil
+	}
+	best := 0
+	for i, v := range nums {
+		if v < nums[best] {
+			best = i
+		}
+		_ = i
+	}
+	return &nums[best] // les éléments d'un slice SONT adressables
 }
 ```
 
-**Le `**Node` de `Remove` est l'astuce centrale.** L'implémentation naïve traite séparément
-« supprimer la tête » et « supprimer ailleurs », avec un pointeur `prev` à maintenir — et
-c'est là que les bugs apparaissent. En manipulant l'**emplacement** du pointeur plutôt que
-le pointeur, la tête n'est plus un cas particulier : `&l.head` est un emplacement comme un
-autre. C'est une technique de C classique, et elle reste la plus élégante en Go.
+**Les trois points de correction :**
 
-**Pourquoi `head` non exporté ?** S'il était public, n'importe qui pourrait faire
-`l.Head = nil` sans décrémenter `size` : l'invariant serait rompu et `Len()` mentirait.
-L'encapsulation ne protège pas les données, elle protège les **invariants**.
+1. **Contrainte 4 et la mise à nil de la queue.** `Compact` laisse à la fin du tableau des
+   pointeurs vers des objets qui ne sont plus dans le slice retourné. Tant que le tableau vit,
+   le ramasse-miettes ne peut pas les libérer. C'est exactement ce que fait `slices.Delete`
+   depuis Go 1.22 — et l'oublier est une fuite mémoire silencieuse, invisible sur des `*int`,
+   coûteuse sur des `*Image`.
+
+2. **Contrainte 2 — `MinPtr` est-il un bon contrat d'API ?** Non, dans le cas général.
+   Retourner un pointeur vers l'intérieur d'une structure qu'on ne possède pas expose l'état
+   de l'appelant à une modification à distance, et le lien n'est visible nulle part dans la
+   signature. `func Min(nums []int) (int, bool)` est presque toujours préférable. Le pointeur
+   ne se justifie que si l'on veut explicitement permettre la modification en place — et il
+   faut alors le nommer en conséquence (`MinRef`, `MinAddr`) et le documenter.
+
+3. **Contrainte 3 — la map nil.** Lire dans une map nil est sûr, y écrire **panique**
+   (niveau 1, leçon 7). Une fonction publique qui reçoit une map doit donc soit refuser
+   explicitement le nil, soit ne faire que lire.
+
+**La question de la fin :** tant qu'on garde le pointeur retourné par `MinPtr`, **le tableau
+sous-jacent entier reste en mémoire** — un seul `*int` conservé peut retenir un slice d'un
+gigaoctet. Le ramasse-miettes de Go libère un objet entier ou rien. C'est le même phénomène que
+le sous-slice de la leçon 6 du niveau 1, et c'est un problème réel en production sur des
+buffers réseau et des fichiers analysés.
 
 ## Défi
 
-**a) Floyd**
+**a) Pointeur de pointeur**
 
 ```go
-func HasCycle(head *Node) bool {
-	slow, fast := head, head
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next      // 1 pas
-		fast = fast.Next.Next // 2 pas
-		if slow == fast {
-			return true
-		}
-	}
-	return false
+func setToNilValue(p *int)  { p = nil }   // réaffecte la COPIE locale : sans effet
+func setToNilPtr(p **int)   { *p = nil }  // écrit à l'adresse du pointeur : fonctionne
+
+x := 42
+p := &x
+setToNilValue(p)
+fmt.Println(p == nil)   // false
+setToNilPtr(&p)
+fmt.Println(p == nil)   // true
+```
+
+**L'explication en trois phrases.** Tout est passé par valeur en Go, y compris un pointeur :
+`setToNilValue` reçoit une copie de l'adresse et ne peut modifier que sa copie. Pour remplacer
+le pointeur **de l'appelant**, il faut recevoir l'adresse de ce pointeur, donc un `**int`.
+C'est exactement la même raison qui rend `*[]int` nécessaire quand une fonction doit remplacer
+le slice entier de l'appelant, et non seulement son contenu.
+
+En pratique, `**T` est rare en Go : on préfère **retourner** la nouvelle valeur
+(`func clear(p *int) *int`), comme le fait `append`. Son usage légitime reste la manipulation
+de structures chaînées, où l'on manipule l'**emplacement** d'un pointeur plutôt que le
+pointeur — technique reprise à la [leçon 3](../lecon-03-methodes/), défi (b).
+
+**b) Aliasing volontaire**
+
+```go
+var ptrs []*int
+v := 0
+for i := range 3 {
+	v = i
+	ptrs = append(ptrs, &v) // TOUS pointent vers la MÊME variable
+}
+for _, p := range ptrs {
+	fmt.Print(*p, " ")      // 2 2 2
 }
 ```
 
-Si un cycle existe, le pointeur rapide finit forcément par rattraper le lent (il gagne un
-pas par tour à l'intérieur du cycle). O(n) en temps, **O(1) en mémoire** — contrairement à
-une map de nœuds visités qui coûterait O(n).
+Le correctif de Go 1.22 **n'aide pas** : il concerne la variable de boucle `i`, pas `v`, qui
+est déclarée à l'extérieur. Il n'existe qu'une seule `v`, donc une seule adresse, donc trois
+pointeurs identiques.
 
-**b) Doublement chaînée**
+Le cas réel où cela arrive : une boucle qui construit un slice de pointeurs vers une structure
+temporaire réutilisée — par exemple en lisant des lignes d'un fichier dans un tampon réutilisé
+et en stockant `&record`. Le symptôme est déroutant : toutes les entrées de la collection sont
+identiques et valent la dernière lue.
 
-`PopBack` et `Remove(n *Node)` deviennent O(1) : plus besoin de parcourir pour trouver le
-prédécesseur. En revanche, chaque opération doit maintenir **deux** pointeurs cohérents,
-et un oubli crée une liste corrompue — silencieusement, jusqu'à un parcours en sens inverse.
-La complexité en temps baisse, la complexité de maintenance monte.
+**c) Coût d'une indirection**
 
-**c) Mémoire et cache**
-
-```go
-unsafe.Sizeof(Node{})   // 16 octets : int (8) + pointeur (8)
-```
-
-| | Mémoire | Parcours |
+| | `[]int` (10⁶) | `[]*int` (10⁶) |
 |---|---|---|
-| `[]int` de 10⁶ | 8 Mo, **contigus** | ~1 ms |
-| Liste de 10⁶ | 16 Mo + surcoût d'allocation ≈ 24 Mo, **dispersés** | ~20 à 50 ms |
+| Mémoire | 8 Mo | 8 Mo (pointeurs) + 10⁶ allocations de 8 octets ≈ **24 Mo** |
+| Somme | ~0,5 ms | ~5 à 15 ms |
 
-Le rapport de mémoire est de 2 à 3×, mais l'écart de **vitesse** est de 20 à 50×. La raison
-n'est pas le nombre d'instructions — il est comparable — mais le **cache CPU** : un slice
-se parcourt séquentiellement, le préchargeur matériel anticipe ; une liste chaînée saute
-d'une adresse imprévisible à l'autre, et chaque saut peut coûter un défaut de cache
-(~100 ns, soit des centaines de cycles perdus).
+Le rapport de mémoire est d'environ 3× : chaque `int` alloué séparément porte un surcoût
+d'allocation et d'alignement.
 
-C'est la raison pour laquelle, en Go comme en C++, **on utilise un slice par défaut** et
-une liste chaînée seulement quand on a besoin d'insertions/suppressions O(1) au milieu avec
-des références stables. Premier contact avec le raisonnement du niveau 8 : la complexité
-algorithmique ne dit pas tout, la localité mémoire compte souvent davantage.
+Le rapport de **temps** est bien plus élevé, et n'est pas dû au nombre d'instructions —
+identique dans les deux cas. Il vient du **cache CPU** : `[]int` est contigu, chaque ligne de
+cache de 64 octets sert pour 8 valeurs et le préchargeur anticipe. `[]*int` oblige à suivre un
+pointeur vers une adresse imprévisible pour chaque élément : c'est un défaut de cache par
+accès, soit une centaine de nanosecondes perdues à chaque fois.
+
+D'où une règle de conception qui reviendra au niveau 11 : **préférer `[]T` à `[]*T`** sauf
+raison précise — objets volumineux, partage voulu, ou nécessité de `nil`.
 
 ## Réponses du quiz
 
 1. `&x` donne l'**adresse** de `x` ; `*p` **suit** le pointeur et donne la valeur pointée.
 2. **Non.** Go n'a que le passage par valeur — mais on peut passer la valeur d'une adresse.
-3. **Non.** Un slice partage déjà son tableau sous-jacent : `s[0] = 1` suffit.
+3. **Non.** Un slice partage déjà son tableau sous-jacent : `s[0] = 1` suffit. Un `*[]T` n'est
+   nécessaire que pour **remplacer** le slice entier de l'appelant.
 4. Parce qu'une map se comporte déjà comme une référence. Un `*map` n'est utile que pour
    remplacer entièrement la map de l'appelant, ce qui est très rare.
 5. Panique : `invalid memory address or nil pointer dereference`.

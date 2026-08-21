@@ -1,4 +1,4 @@
-# Leçon 11 — Corrigé
+# Leçon 4 — Corrigé
 
 > ⚠️ À ne lire qu'après avoir essayé.
 
@@ -203,40 +203,8 @@ court-circuiter le buffer intermédiaire).
 Limite honnête : ce patron est **invisible dans les signatures**. Il faut le documenter,
 sinon personne ne sait que l'optimisation existe.
 
-**b) Décorateur**
-
-```go
-type LoggingNotifier struct {
-	Notifier          // interface EMBARQUÉE : les méthodes non redéfinies sont promues
-	Prefix   string
-}
-
-func (l LoggingNotifier) Notify(user, msg string) error {
-	log.Printf("%s → envoi à %s", l.Prefix, user)
-	err := l.Notifier.Notify(user, msg) // délégation explicite
-	if err != nil {
-		log.Printf("%s → échec : %v", l.Prefix, err)
-	}
-	return err
-}
-
-n := LoggingNotifier{
-	Notifier: LoggingNotifier{
-		Notifier: EmailNotifier{From: "x@y.fr"},
-		Prefix:   "interne",
-	},
-	Prefix: "externe",
-}
-```
-
-L'ordre d'exécution est **externe → interne → cœur → interne → externe** : chaque couche
-enveloppe la suivante. C'est exactement la structure d'un middleware HTTP
-(`func(http.Handler) http.Handler`), et c'est pourquoi reconnaître le patron ici fait gagner
-beaucoup de temps au niveau 5.
-
-L'embedding de l'interface évite d'écrire des méthodes de délégation pour tout ce qu'on ne
-décore pas — mais attention : si le champ embarqué est nil et qu'une méthode non redéfinie
-est appelée, c'est la panique.
+**b) Décorateur** — reporté à la [leçon 5](../lecon-05-composition/correction.md), qui
+traite l'embedding sur lequel il repose.
 
 **c) Critique de `Storage`**
 
@@ -292,12 +260,11 @@ définit et pourquoi**.
    l'interface.
 9. De `interface{}`, depuis **Go 1.18**. C'est un alias, donc strictement le même type.
 10. `T` ne la satisfait **pas** ; seul `*T` la satisfait. L'ensemble de méthodes de `T` ne
-    contient que les méthodes à récepteur valeur, tandis que celui de `*T` contient les deux.
-    C'est la raison technique de la règle « cohérence des récepteurs ».
+    contient que les méthodes à récepteur valeur, tandis que celui de `*T` contient les deux
+    (leçon 3). C'est la raison technique de la règle de cohérence des récepteurs.
+11. Avec `var _ Iface = (*T)(nil)` au niveau du package : une erreur de compilation si le
+    contrat n'est pas rempli, et un coût nul à l'exécution.
 
 ---
 
-## 🎓 Fin du niveau 1
 
-Une fois ces onze leçons digérées : demander l'**évaluation cumulative**, puis attaquer le
-[projet 1 — `wordstat`](../../projets/projet-01-cli-simple/).

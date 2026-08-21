@@ -1,4 +1,4 @@
-# Leçon 10 — Corrigé
+# Leçon 3 — Corrigé
 
 > ⚠️ À ne lire qu'après avoir essayé.
 
@@ -15,19 +15,90 @@ Après dix appels : `N` vaut 0 avec `IncValue`, 10 avec `IncPtr`. Le compilateur
 le bug silencieux le plus fréquent de la leçon, et la raison pour laquelle le conseil « en
 cas de doute, récepteur pointeur » existe.
 
-## E2 — Comparabilité
+## E2 — Ensemble de méthodes
 
 ```go
-type A struct{ X int; S string }      // comparable ✔ — clé de map possible
-type B struct{ Tags []string }        // NON comparable ✘ — invalid map key type
-type C struct{ Tags [3]string }       // comparable ✔ — un TABLEAU est comparable
+type T struct{ N int }
+func (t T) Val() int   { return t.N }   // récepteur VALEUR
+func (t *T) Inc()      { t.N++ }        // récepteur POINTEUR
+
+func makeT() T { return T{} }
+
+var v T
+v.Val()       // OK
+v.Inc()       // OK — Go réécrit (&v).Inc(), car v est ADRESSABLE
+
+p := &T{}
+p.Val()       // OK — Go réécrit (*p).Val()
+p.Inc()       // OK
+
+makeT().Val() // OK
+makeT().Inc() // ERREUR : cannot call pointer method Inc on T
 ```
 
-Un tableau de taille fixe est comparable si son type d'élément l'est ; un slice ne l'est
-jamais (il faudrait comparer le contenu pointé, ce que `==` ne fait pas). Seuls `A` et `C`
-peuvent servir de clés de map.
+Le message exact :
+```
+./main.go:15:9: cannot call pointer method Inc on T
+```
 
-## E3 — Stringer et récursion
+Le résultat d'un appel de fonction est une valeur **temporaire, non adressable** : elle n'a pas
+d'emplacement mémoire stable dont on pourrait prendre l'adresse. Go refuse donc la conversion
+automatique.
+
+Le tableau à retenir :
+
+| Type | Ensemble de méthodes | Peut appeler |
+|---|---|---|
+| `T` | méthodes à récepteur valeur | les deux **si la valeur est adressable** |
+| `*T` | méthodes à récepteur valeur **et** pointeur | les deux, toujours |
+
+La distinction « ensemble de méthodes » et « ce qu'on peut appeler » est subtile : l'appel
+bénéficie du sucre syntaxique, la **satisfaction d'interface** non. C'est ce qui produira le
+message `T does not implement I (method Inc has pointer receiver)` à la leçon 4.
+
+## E3 — Méthodes sur un type non-struct
+
+```go
+type Temperature float64
+
+func (t Temperature) Fahrenheit() Temperature { return t*9/5 + 32 }
+func (t Temperature) String() string          { return fmt.Sprintf("%.1f°C", float64(t)) }
+
+type Tags []string
+
+func (t Tags) Contains(s string) bool { return slices.Contains(t, s) }
+func (t Tags) Normalized() Tags {
+	out := make(Tags, len(t))
+	for i, s := range t {
+		out[i] = strings.ToLower(strings.TrimSpace(s))
+	}
+	return out
+}
+
+type Counters map[string]int
+
+func (c Counters) Inc(k string)     { c[k]++ }        // pas besoin de pointeur :
+func (c Counters) Total() (n int) {                   // une map partage déjà sa donnée
+	for _, v := range c {
+		n += v
+	}
+	return n
+}
+```
+
+`Counters.Inc` a un récepteur **valeur** et modifie pourtant le contenu : une map contient un
+pointeur interne, la copier copie la référence. Même chose pour `Tags` si l'on modifiait un
+élément — mais un `append` exigerait un pointeur, puisqu'il remplace le descripteur.
+
+La tentative d'ajouter une méthode à `float64` :
+```
+./main.go:8:6: cannot define new methods on non-local type float64
+```
+On ne peut définir des méthodes que sur un type déclaré **dans le package courant**. C'est
+cette règle qui rend impossible le *monkey patching* : le comportement d'un type ne peut jamais
+être modifié à distance par un autre package.
+
+## E4 — `String()` et récursion
 
 ```go
 type Duration int
@@ -48,7 +119,7 @@ fatal error: stack overflow
 récursion infinie. La parade : convertir vers le type sous-jacent (`int(d)`) ou utiliser
 les champs directement. `go vet` détecte certains cas de cette récursion, mais pas tous.
 
-## E4 — Adressabilité
+## E5 — Adressabilité
 
 ```
 m["a"].N = 2    → cannot assign to struct field m["a"].N in map
@@ -74,31 +145,6 @@ partagées ; la réécriture si les valeurs sont petites et qu'on veut préserve
 (personne ne peut modifier une entrée sans passer par la map). Le piège de la première : un
 `*Item` récupéré et gardé reste valide après un `delete` — l'objet survit, ce qui peut
 surprendre.
-
-## E5 — Embedding
-
-```go
-type Base struct{ Name string }
-func (b Base) Describe() string { return "Base: " + b.Name }
-
-type Derived struct {
-	Base
-	Extra string
-}
-func (d Derived) Describe() string { return "Derived: " + d.Extra }
-
-d := Derived{Base{"x"}, "y"}
-d.Describe()        // "Derived: y"  — la méthode du type extérieur masque celle du type embarqué
-d.Base.Describe()   // "Base: x"     — la version embarquée reste accessible par son nom
-
-var b Base = d      // ERREUR : cannot use d (Derived) as Base value
-```
-
-Le message du compilateur est la réponse : **l'embedding n'est pas de l'héritage**. Il n'y a
-aucune relation de sous-typage entre `Derived` et `Base`. Le polymorphisme, en Go, passe
-uniquement par les **interfaces** — si `Base` et `Derived` satisfont toutes deux une
-interface `Describer`, elles sont interchangeables *à travers cette interface*, sans être
-parentes.
 
 ## Exercice intermédiaire — `inventory`
 
@@ -224,89 +270,264 @@ copie profonde, soit une interface en lecture seule.
 C'est exactement le type d'arbitrage évalué en revue de code : la bonne réponse n'est pas
 « pointeur » ou « valeur », c'est **savoir formuler le compromis**.
 
-## Défi — Matrix
+## Défi
+
+**a) Buffer circulaire**
 
 ```go
-type Matrix struct {
-	rows, cols int
-	data       []float64 // stockage LINÉAIRE : m.data[i*cols+j]
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+// Ring est un tampon circulaire de taille fixe.
+// Quand il est plein, chaque Push écrase l'élément le plus ancien.
+type Ring struct {
+	buf   []int
+	start int // indice du plus ancien élément
+	count int // nombre d'éléments présents (0 ≤ count ≤ len(buf))
+}
+
+func NewRing(size int) (*Ring, error) {
+	if size <= 0 {
+		return nil, fmt.Errorf("taille invalide : %d", size)
+	}
+	return &Ring{buf: make([]int, size)}, nil // allocation UNIQUE
+}
+
+func (r *Ring) Push(v int) {
+	end := (r.start + r.count) % len(r.buf)
+	r.buf[end] = v
+	if r.count < len(r.buf) {
+		r.count++
+		return
+	}
+	// plein : le plus ancien vient d'être écrasé, on avance la fenêtre
+	r.start = (r.start + 1) % len(r.buf)
+}
+
+func (r *Ring) Len() int { return r.count }
+
+// Slice retourne une COPIE, du plus ancien au plus récent.
+// Retourner r.buf directement exposerait l'état interne : l'appelant pourrait
+// écrire dedans et casser l'invariant, ou lire des cases non encore écrites.
+func (r *Ring) Slice() []int {
+	out := make([]int, 0, r.count)
+	for i := range r.count {
+		out = append(out, r.buf[(r.start+i)%len(r.buf)])
+	}
+	return out
 }
 ```
 
-**Pourquoi un seul `[]float64` et pas `[][]float64` ?** Un `[][]float64` est un slice de
-slices : `n` allocations séparées, dispersées en mémoire, et deux indirections par accès.
-Un stockage linéaire donne **une** allocation, une mémoire contiguë, et un parcours
-séquentiel que le préchargeur du CPU anticipe. Sur une multiplication de matrices 1000×1000,
-l'écart dépasse fréquemment un facteur 3. C'est le même raisonnement de localité qu'en
-leçon 9.
+**Les trois points qui font la différence :**
+
+1. **`start` + `count`**, pas `start` + `end`. Avec deux indices seulement, « vide » et
+   « plein » donnent la même configuration et deviennent indiscernables. C'est le piège
+   classique du tampon circulaire.
+2. **Le modulo** fait tout le travail d'enroulement. Pas de `if` sur les bords.
+3. **`Slice()` copie.** Retourner une vue interne serait plus rapide et détruirait
+   l'encapsulation : c'est le même arbitrage que dans le projet 1.
+
+Cas limites à vérifier : `size == 1` (chaque `Push` écrase), exactement plein, deux tours
+complets, `Slice()` sur un buffer vide (retourne un slice vide, pas nil — les deux sont
+acceptables si documenté).
+
+**b) Liste chaînée**
 
 ```go
-func (m *Matrix) At(i, j int) (float64, error) {
-	if i < 0 || i >= m.rows || j < 0 || j >= m.cols {
-		return 0, fmt.Errorf("indice (%d,%d) hors bornes (%d×%d)", i, j, m.rows, m.cols)
-	}
-	return m.data[i*m.cols+j], nil
+package main
+
+type Node struct {
+	Value int
+	Next  *Node
 }
 
-func (m *Matrix) Mul(o *Matrix) (*Matrix, error) {
-	if m.cols != o.rows {
-		return nil, fmt.Errorf("dimensions incompatibles : %d×%d × %d×%d",
-			m.rows, m.cols, o.rows, o.cols)
+// List est une liste chaînée simple.
+// head est non exporté : l'invariant « size correspond au nombre de nœuds »
+// ne peut être garanti que si personne d'autre ne peut modifier la chaîne.
+// La zéro-valeur (var l List) est immédiatement utilisable.
+type List struct {
+	head *Node
+	size int
+}
+
+func (l *List) Len() int { return l.size }
+
+func (l *List) PushFront(v int) {
+	l.head = &Node{Value: v, Next: l.head}
+	l.size++
+}
+
+func (l *List) PushBack(v int) {
+	n := &Node{Value: v}
+	l.size++
+	if l.head == nil {
+		l.head = n
+		return
 	}
-	out := &Matrix{rows: m.rows, cols: o.cols, data: make([]float64, m.rows*o.cols)}
-	for i := range m.rows {
-		for k := range m.cols { // ordre i,k,j : meilleur pour le cache que i,j,k
-			a := m.data[i*m.cols+k]
-			for j := range o.cols {
-				out.data[i*o.cols+j] += a * o.data[k*o.cols+j]
-			}
+	cur := l.head
+	for cur.Next != nil {
+		cur = cur.Next
+	}
+	cur.Next = n
+}
+
+func (l *List) PopFront() (int, bool) {
+	if l.head == nil {
+		return 0, false
+	}
+	n := l.head
+	l.head = n.Next
+	n.Next = nil // coupe la référence : le nœud retiré ne retient plus la suite
+	l.size--
+	return n.Value, true
+}
+
+// Remove supprime la première occurrence de v.
+func (l *List) Remove(v int) bool {
+	// Le pointeur de pointeur élimine TOUS les cas particuliers :
+	// tête, milieu, queue, liste d'un seul élément — un seul chemin de code.
+	pp := &l.head
+	for *pp != nil {
+		if (*pp).Value == v {
+			*pp = (*pp).Next
+			l.size--
+			return true
+		}
+		pp = &(*pp).Next
+	}
+	return false
+}
+
+func (l *List) Slice() []int {
+	out := make([]int, 0, l.size)
+	for cur := l.head; cur != nil; cur = cur.Next {
+		out = append(out, cur.Value)
+	}
+	return out
+}
+
+// Reverse inverse la liste en place : seuls les pointeurs Next changent.
+func (l *List) Reverse() {
+	var prev *Node
+	cur := l.head
+	for cur != nil {
+		next := cur.Next // sauvegarder AVANT d'écraser
+		cur.Next = prev
+		prev = cur
+		cur = next
+	}
+	l.head = prev
+}
+```
+
+**Le `**Node` de `Remove` est l'astuce centrale.** L'implémentation naïve traite séparément
+« supprimer la tête » et « supprimer ailleurs », avec un pointeur `prev` à maintenir — et
+c'est là que les bugs apparaissent. En manipulant l'**emplacement** du pointeur plutôt que
+le pointeur, la tête n'est plus un cas particulier : `&l.head` est un emplacement comme un
+autre. C'est une technique de C classique, et elle reste la plus élégante en Go.
+
+**Pourquoi `head` non exporté ?** S'il était public, n'importe qui pourrait faire
+`l.Head = nil` sans décrémenter `size` : l'invariant serait rompu et `Len()` mentirait.
+L'encapsulation ne protège pas les données, elle protège les **invariants**.
+
+**Détection de cycle, en O(1) mémoire**
+
+```go
+func HasCycle(head *Node) bool {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next      // 1 pas
+		fast = fast.Next.Next // 2 pas
+		if slow == fast {
+			return true
 		}
 	}
-	return out, nil
-}
-
-func (m *Matrix) Clone() *Matrix {
-	return &Matrix{rows: m.rows, cols: m.cols, data: slices.Clone(m.data)}
+	return false
 }
 ```
 
-**(b)** `m2 := *m` copie la struct : `rows`, `cols` et le **descripteur** de `data` — mais
-pas le tableau sous-jacent. Les deux matrices partageraient donc les mêmes nombres, et
-modifier l'une modifierait l'autre. C'est le piège de la leçon 6 appliqué aux structs :
-une copie de struct est **superficielle**, elle s'arrête au premier slice, map ou pointeur.
+Si un cycle existe, le pointeur rapide finit forcément par rattraper le lent (il gagne un
+pas par tour à l'intérieur du cycle). O(n) en temps, **O(1) en mémoire** — contrairement à
+une map de nœuds visités qui coûterait O(n).
 
-**(c) Comparaison des quatre conceptions**
+**c) Cache LRU**
 
-| Conception | Ergonomie | Allocations | Testabilité | Sécurité |
-|---|---|---|---|---|
-| `Mul(o) (*Matrix, error)` | excellente | 1 par appel | excellente | erreurs explicites |
-| `Mul(o, dst) error` | lourde | 0 (dst réutilisable) | bonne | risque d'aliasing si `dst == m` |
-| `Mul` qui panique | concise, chaînable | 1 | mauvaise (`recover` en test) | fragile |
-| Dimensions dans le type (génériques) | rigide | 1 | excellente | vérifié à la **compilation** |
+Une map seule ne suffit pas : elle donne l'accès en O(1) mais ne dit pas quel élément est le
+plus ancien. Il faut y ajouter une structure qui maintient **l'ordre d'usage** et permet de
+déplacer un élément en tête en O(1) — une **liste doublement chaînée**. La map stocke alors
+`clé → pointeur vers le nœud`.
 
-La bibliothèque standard Go choisirait la **première** : erreurs explicites, pas de panique,
-API simple. C'est d'ailleurs ce que fait `gonum` pour son API de haut niveau, tout en
-exposant une variante à destination fournie pour les boucles chaudes — les deux coexistent,
-la simple par défaut et l'optimisée en option. La quatrième est séduisante mais Go ne permet
-pas d'entiers comme paramètres de type : elle exigerait un type par dimension.
+```go
+type entry struct {
+	key   string
+	value int
+	prev  *entry
+	next  *entry
+}
+
+type LRU struct {
+	capacity int
+	items    map[string]*entry
+	head     *entry // le plus récemment utilisé
+	tail     *entry // le plus ancien : la victime de l'éviction
+}
+
+func (c *LRU) Get(key string) (int, bool) {
+	e, ok := c.items[key]
+	if !ok {
+		return 0, false
+	}
+	c.moveToFront(e) // un Get COMPTE comme un usage
+	return e.value, true
+}
+
+func (c *LRU) Put(key string, value int) {
+	if e, ok := c.items[key]; ok {
+		e.value = value
+		c.moveToFront(e)
+		return
+	}
+	if len(c.items) == c.capacity {
+		delete(c.items, c.tail.key) // évincer AVANT d'insérer
+		c.remove(c.tail)
+	}
+	e := &entry{key: key, value: value}
+	c.items[key] = e
+	c.pushFront(e)
+}
+```
+
+Les deux erreurs classiques : oublier que `Get` rafraîchit l'ordre, et oublier de retirer la
+clé de la **map** en même temps que le nœud de la liste (fuite mémoire silencieuse : la map
+grossit indéfiniment).
+
+`container/list` de la stdlib fait le travail de la liste, mais l'écrire à la main une fois
+apprend beaucoup plus. Version production : y ajouter un `sync.Mutex` (niveau 4) et des
+métriques de taux de succès (niveau 9).
 
 ## Réponses du quiz
 
-1. Le récepteur valeur reçoit une **copie** (modifications invisibles) ; le récepteur
+1. Le récepteur valeur reçoit une **copie** (les modifications sont invisibles) ; le récepteur
    pointeur reçoit l'adresse et peut modifier l'original.
-2. Rien de visible : la copie est modifiée puis jetée. Aucune erreur de compilation.
-3. Quand **tous** ses champs sont comparables. Un slice, une map ou une fonction rend toute
-   la struct non comparable.
-4. Non sur `int` (type d'un autre paquet, le paquet `builtin`). Oui sur `type MyInt int`,
-   déclaré dans notre paquet.
-5. Parce que l'appel implique de prendre l'adresse du récepteur, et que les entrées de map
-   ne sont **pas adressables**.
-6. `fmt` détecte que `x` satisfait `fmt.Stringer` et appelle `String()`.
-7. Une **récursion infinie** : `%v` rappelle `String()`. Résultat : `fatal error: stack overflow`.
-8. Non. Deux différences : pas de sous-typage (`var b Base = derived` ne compile pas), et
-   pas de dispatch virtuel (le code de `Base` appelle toujours la méthode de `Base`, même si
-   `Derived` la redéfinit).
-9. Seulement quand la construction exige quelque chose : validation, initialisation d'une
-   map ou d'un channel, identifiant à générer. Si la zéro-valeur suffit, s'en passer.
-10. Parce que `GetName()` est redondant : le nom du champ dit déjà ce qu'on obtient. La
-    convention Go est `u.Name()` pour l'accesseur et `u.SetName(x)` pour le mutateur.
+2. Rien de visible : la copie est modifiée puis jetée. **Aucune erreur de compilation** — c'est
+   ce qui en fait le bug silencieux le plus fréquent du niveau.
+3. `T` n'a que les méthodes à récepteur **valeur** ; `*T` a **les deux**.
+4. Non sur `int` ni sur `time.Time` : ce sont des types non locaux. Oui sur
+   `type MyInt int` déclaré dans le package courant.
+5. Parce que l'appel implique de prendre l'adresse du récepteur, et que les entrées de map ne
+   sont **pas adressables** — le runtime peut les déplacer lors d'un redimensionnement.
+6. **Non.** Elle ne panique que si elle **déréférence** le récepteur. On peut donc écrire
+   délibérément des méthodes qui tolèrent `nil`, comme `func (l *List) Len() int` qui retourne
+   0 sur une liste nil.
+7. `fmt` teste à l'exécution si la valeur satisfait `fmt.Stringer` et appelle `String()`.
+8. Une **récursion infinie** : `%v` rappelle `String()`. Résultat : `fatal error: stack overflow`.
+9. Seulement si la construction exige une validation, une initialisation (map, channel,
+   slice préalloué) ou une ressource. On l'appelle `New` tout court quand le package ne
+   construit qu'un seul type — d'où `list.New()`, `errors.New()`, `bytes.NewBuffer()`.
+10. Parce que `GetName()` est redondant : le nom du champ dit déjà ce qu'on obtient. Un
+    accesseur n'est justifié que s'il **valide**, **calcule** ou **protège** — pas s'il se
+    contente d'exposer un champ, auquel cas autant exporter le champ.
