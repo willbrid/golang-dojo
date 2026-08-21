@@ -25,12 +25,6 @@ interchangeables par des interfaces, et organiser le tout en packages et en modu
 | 9 | [Modules et `go.mod`](lecon-09-modules-gomod/) | Gérer les dépendances, comprendre MVS et le semver de Go |
 | 10 | [Organisation d'un projet](lecon-10-organisation-projet/) | Structurer un projet réel sans sur-structurer |
 
-## Correspondance avec les chapitres de *Pro Go*
-
-`9-structs` → leçon 2 · `10-methodsAndInterfaces` → leçons 3 et 4 · `11-packages` → leçons 8
-et 9 · `12-composition` → leçon 5 · `14-errorHandling` → leçons 6 et 7 (la première approche
-des erreurs est au niveau 1, leçon 10).
-
 ## Évaluation de fin de niveau
 
 Évaluation cumulative des niveaux 1 et 2, puis le

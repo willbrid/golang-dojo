@@ -24,40 +24,6 @@ encore été vu**. Cela impose plusieurs choix qui s'écartent de l'ordre habitu
 | **Tests** avant la concurrence | le détecteur de races s'utilise avec `go test -race` |
 | **Réflexion** après JSON et les bases de données | elle n'a de sens qu'une fois vus les usages qu'elle sert |
 
-## Correspondance avec les chapitres de *Pro Go*
-
-| Chapitre | Où il est traité |
-|---|---|
-| `2-tools` | N1 L1 |
-| `3-basicFeatures` | N1 L2, L8 |
-| `4-operations` | N1 L3 |
-| `5-flowcontrol` | N1 L4, L5 |
-| `6-collections` | N1 L6, L7 |
-| `7-functions` | N1 L9 |
-| `8-functionTypes` | N1 L11 |
-| `9-structs` | N2 L2 |
-| `10-methodsAndInterfaces` | N2 L3, L4 |
-| `11-packages` | N2 L8, L9 |
-| `12-composition` | N2 L5 |
-| `13-concurrency` | N6 L1 à L9 |
-| `14-errorHandling` | N1 L10 (usage), N2 L6, L7 (mécanique) |
-| `15-stringsandregexp` | N4 L2 |
-| `16-usingstrings` | N4 L1 |
-| `17-mathandsorting` | N4 L3 |
-| `18-datesandtimes` | N4 L4 |
-| `19-readersandwriters` | N4 L5 |
-| `20-readersandwritersjson` | N4 L6 |
-| `21-files` | N4 L7 |
-| `22-htmltext` | N4 L8 |
-| `23-httpserver` | N7 L1 à L5, L9 |
-| `24-httpclient` | N7 L6, L7 |
-| `25-data` | N8 |
-| `26/27/28-reflection` | N9 |
-| `29-coordination` | N6 L5 à L7, L11 |
-| `30-tests` | N5 |
-
-Les niveaux 10 à 13 (architecture, performance, production, expert) vont au-delà du livre.
-
 ---
 
 ## Niveau 1 — Fondamentaux du langage

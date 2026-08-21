@@ -27,12 +27,6 @@ valeur/référence, UTF-8) est réexpliquée au passage.
 | 10 | [Erreurs — première approche](lecon-10-erreurs-premiere-approche/) | Retourner et traiter `(T, error)`, rédiger de bons messages |
 | 11 | [Types fonction et closures](lecon-11-types-fonction-closures/) | Fonctions d'ordre supérieur, closures, décorateurs, options fonctionnelles |
 
-## Correspondance avec les chapitres de *Pro Go*
-
-`2-tools` → leçon 1 · `3-basicFeatures` → leçons 2 et 8 · `4-operations` → leçon 3 ·
-`5-flowcontrol` → leçons 4 et 5 · `6-collections` → leçons 6 et 7 · `7-functions` → leçon 9 ·
-`8-functionTypes` → leçon 11.
-
 ## Évaluation de fin de niveau
 
 Un exercice de synthèse noté sur les quatre axes (*fonctionne / correct / idiomatique /
