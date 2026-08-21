@@ -2,6 +2,10 @@
 
 Formation Go de zéro à expert — cours, exercices et corrections.
 
+Le dépôt est **autonome et réutilisable** : il ne contient que du matériel de formation.
+Aucune donnée personnelle, aucun suivi de progression, aucun résultat d'évaluation n'y est
+publié — quiconque clone ce dépôt peut suivre le parcours du début à la fin.
+
 **Version de Go ciblée : 1.27** (dernière stable, sortie le 19 août 2026).
 Vérifiée auprès des sources officielles : [go.dev/VERSION](https://go.dev/VERSION?m=text) et
 [l'historique des versions](https://go.dev/doc/devel/release).
@@ -13,8 +17,6 @@ Vérifiée auprès des sources officielles : [go.dev/VERSION](https://go.dev/VER
 ```
 .
 ├── SYLLABUS.md                  Le plan détaillé des 13 niveaux (~124 leçons)
-├── PROGRESSION.md               Mon journal : acquis, lacunes, erreurs récurrentes
-├── evaluations/                 Tests de positionnement et évaluations cumulatives
 ├── ressources/                  Aide-mémoire, liens officiels, glossaire
 ├── niveau-01-fondamentaux/
 │   ├── README.md                Sommaire et objectifs du niveau
@@ -24,12 +26,12 @@ Vérifiée auprès des sources officielles : [go.dev/VERSION](https://go.dev/VER
 ├── niveau-02-types-abstraction/ …
 ├── …
 ├── projets/                     Les 9 projets, spécifications et contraintes
-└── mes-solutions/               MON code d'apprentissage — ignoré par git, jamais poussé
+└── mes-solutions/               Le code d'entraînement du lecteur — ignoré par git
 ```
 
 ### Où sont les corrections ?
 
-**Sur une branche séparée, volontairement.** Elles ne sont pas sur `main` pour que je ne
+**Sur une branche séparée, volontairement.** Elles ne sont pas sur `main` pour qu'on ne
 tombe pas dessus par accident en lisant un exercice.
 
 ```bash
@@ -39,10 +41,10 @@ git checkout main            # pour revenir au cours
 ```
 
 Sur cette branche, chaque leçon a un fichier `correction.md` et un répertoire `solution/`
-avec le code Go commenté. **La règle reste : je ne les ouvre qu'après avoir vraiment
-essayé**, ou quand je bloque depuis un moment.
+avec le code Go commenté. **La règle reste : ne les ouvrir qu'après avoir vraiment
+essayé**, ou après être resté bloqué un moment.
 
-### Où j'écris mon code
+### Où écrire son code
 
 Tout dans `mes-solutions/`, en miroir de l'arborescence du cours :
 
@@ -55,7 +57,9 @@ mes-solutions/
         └── tempconv/
 ```
 
-Ce répertoire est dans `.gitignore` : mon code d'entraînement reste sur ma machine.
+Ce répertoire est dans `.gitignore` : le code d'entraînement reste local, il n'est jamais
+poussé. Il en va de même pour tout journal de progression ou résultat d'évaluation, qui
+n'ont pas leur place dans un dépôt destiné à être réutilisé.
 
 ---
 
@@ -68,10 +72,7 @@ go version
 # 2. Lire le plan
 less SYLLABUS.md
 
-# 3. Se positionner AVANT de commencer (ne compile rien : réponds de tête)
-less evaluations/00-test-de-positionnement.md
-
-# 4. Commencer là où le test m'a placé
+# 3. Commencer
 less niveau-01-fondamentaux/lecon-01-environnement/cours.md
 ```
 
@@ -122,7 +123,7 @@ Chaque exercice est évalué selon cette échelle, utilisée d'un bout à l'autr
 
 | Niveau | Question à laquelle il répond |
 |---|---|
-| **Ça fonctionne** | Le programme donne le bon résultat, aujourd'hui, sur mes données. |
+| **Ça fonctionne** | Le programme donne le bon résultat, aujourd'hui, sur les données d'essai. |
 | **C'est correct** | C'est vrai pour *toutes* les entrées, y compris les cas limites. |
 | **C'est idiomatique** | Un développeur Go expérimenté l'aurait écrit ainsi et le comprend en 3 secondes. |
 | **C'est prêt pour la production** | Ça survit aux erreurs, aux timeouts, à la concurrence ; ça se surveille et se maintient. |
@@ -130,9 +131,9 @@ Chaque exercice est évalué selon cette échelle, utilisée d'un bout à l'autr
 ## Règles de la formation
 
 1. Aucune solution avant une tentative réelle.
-2. Face à un code faux : *quoi*, *pourquoi*, un **indice** — puis je corrige moi-même.
+2. Face à un code faux : *quoi*, *pourquoi*, un **indice** — la correction se fait soi-même.
 3. Un quiz clôt chaque leçon ; une évaluation cumulative clôt chaque niveau.
-4. La difficulté s'adapte à mes résultats, consignés dans [PROGRESSION.md](PROGRESSION.md).
+4. L'ordre des leçons se respecte : chacune suppose acquis tout ce qui précède.
 
 ## Sources officielles
 
