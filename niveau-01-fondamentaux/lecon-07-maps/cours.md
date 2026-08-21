@@ -278,4 +278,6 @@ func main() {
 - Les entrées ne sont **pas adressables**.
 - Une map se comporte comme une référence : la passer permet à la fonction de la modifier.
 
+🧵 **Fil rouge :** cette leçon ajoute une ligne au tableau *[Copié ou partagé ?](../../ressources/copie-ou-partage.md)* — c'est le moment de le relire.
+
 ➡️ [Exercices](exercices.md)

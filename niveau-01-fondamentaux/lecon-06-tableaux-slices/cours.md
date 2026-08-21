@@ -294,4 +294,6 @@ func main() {
 - `s[low:high:max]` borne la capacité ; `slices.Clone` copie franchement.
 - Un slice `nil` est utilisable : `len`, `range`, `append` fonctionnent dessus.
 
+🧵 **Fil rouge :** cette leçon ajoute une ligne au tableau *[Copié ou partagé ?](../../ressources/copie-ou-partage.md)* — c'est le moment de le relire.
+
 ➡️ [Exercices](exercices.md)

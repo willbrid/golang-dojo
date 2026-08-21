@@ -259,4 +259,6 @@ func main() {
 - Retourner l'adresse d'une locale est **sûr** : le compilateur gère l'échappement.
 - Quatre raisons d'utiliser un pointeur : muter, grosse struct, valeur optionnelle, non copiable.
 
+🧵 **Fil rouge :** cette leçon ajoute une ligne au tableau *[Copié ou partagé ?](../../ressources/copie-ou-partage.md)* — c'est le moment de le relire.
+
 ➡️ [Exercices](exercices.md)

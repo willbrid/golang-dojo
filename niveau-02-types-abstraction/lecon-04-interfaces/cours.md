@@ -327,4 +327,6 @@ func main() {
 
 ---
 
+🧵 **Fil rouge :** cette leçon ajoute une ligne au tableau *[Copié ou partagé ?](../../ressources/copie-ou-partage.md)* — c'est le moment de le relire.
+
 ➡️ [Exercices](exercices.md)
