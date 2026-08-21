@@ -236,4 +236,6 @@ func main() {
 - Les conversions `[]byte(s)` et `[]rune(s)` **allouent et copient**.
 - `string(nombre)` n'est pas `strconv.Itoa(nombre)`.
 
+🧵 **Fil rouge :** cette leçon ajoute une ligne au tableau *[Copié ou partagé ?](../../ressources/copie-ou-partage.md)* — c'est le moment de le relire.
+
 ➡️ [Exercices](exercices.md)

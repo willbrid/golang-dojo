@@ -325,4 +325,6 @@ func main() {
 - `String()` est appelée par `fmt` ; le type du récepteur détermine quand.
 - Pas de préfixe `Get`, pas d'accesseur qui ne protège rien.
 
+🧵 **Fil rouge :** cette leçon ajoute une ligne au tableau *[Copié ou partagé ?](../../ressources/copie-ou-partage.md)* — c'est le moment de le relire.
+
 ➡️ [Exercices](exercices.md)

@@ -17,7 +17,7 @@ Vérifiée auprès des sources officielles : [go.dev/VERSION](https://go.dev/VER
 ```
 .
 ├── SYLLABUS.md                  Le plan détaillé des 13 niveaux (~124 leçons)
-├── ressources/                  Aide-mémoire, liens officiels, glossaire
+├── ressources/                  Aide-mémoire, fil rouge « copié ou partagé ? », liens
 ├── niveau-01-fondamentaux/
 │   ├── README.md                Sommaire et objectifs du niveau
 │   └── lecon-01-environnement/
@@ -108,6 +108,12 @@ go version
 
 Détail complet et ordre des leçons dans
 [SYLLABUS.md](SYLLABUS.md).
+
+### Le fil rouge
+
+Une même question traverse tout le parcours — *qu'est-ce qui est copié, qu'est-ce qui est
+partagé ?* Elle a sa page dédiée, [ressources/copie-ou-partage.md](ressources/copie-ou-partage.md),
+à lire tôt et à relire après chaque leçon sur un nouveau type.
 
 ### L'ordre est une contrainte, pas une suggestion
 

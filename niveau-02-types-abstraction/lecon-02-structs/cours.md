@@ -328,4 +328,6 @@ func main() {
 - Les **balises** sont des chaînes lues par réflexion à l'exécution, invisibles au compilateur.
 - L'ordre des champs influe sur la taille en mémoire — sujet du niveau 11, pas d'aujourd'hui.
 
+🧵 **Fil rouge :** cette leçon ajoute une ligne au tableau *[Copié ou partagé ?](../../ressources/copie-ou-partage.md)* — c'est le moment de le relire.
+
 ➡️ [Exercices](exercices.md)
