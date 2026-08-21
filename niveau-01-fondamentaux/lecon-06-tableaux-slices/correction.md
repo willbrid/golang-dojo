@@ -92,68 +92,108 @@ dst := slices.Clone(src)
 `copy` ne redimensionne **jamais** la destination : il copie `min(len(dst), len(src))`
 éléments. Il retourne ce nombre — ignorer ce retour est la cause du bug.
 
-## Exercice intermédiaire — `ringbuffer`
+## Exercice intermédiaire — `slicelib`
 
 ```go
-package main
-
-import (
-	"errors"
-	"fmt"
-)
-
-// Ring est un tampon circulaire de taille fixe.
-// Quand il est plein, chaque Push écrase l'élément le plus ancien.
-type Ring struct {
-	buf   []int
-	start int // indice du plus ancien élément
-	count int // nombre d'éléments présents (0 ≤ count ≤ len(buf))
-}
-
-func NewRing(size int) (*Ring, error) {
+// Chunk découpe s en morceaux de taille size. Le dernier peut être plus court.
+// CHOIX DOCUMENTÉ : les morceaux PARTAGENT le tableau sous-jacent de s.
+// C'est gratuit et c'est ce que fait slices.Chunk de la stdlib. Conséquence :
+// écrire dans un morceau modifie s. La capacité est bornée (a:b:b) pour qu'un
+// append sur un morceau ne déborde pas sur le morceau suivant.
+func Chunk(s []int, size int) ([][]int, error) {
 	if size <= 0 {
-		return nil, fmt.Errorf("taille invalide : %d", size)
+		return nil, fmt.Errorf("taille de morceau invalide : %d", size)
 	}
-	return &Ring{buf: make([]int, size)}, nil // allocation UNIQUE
+	out := make([][]int, 0, (len(s)+size-1)/size) // préallocation exacte
+	for i := 0; i < len(s); i += size {
+		end := min(i+size, len(s))
+		out = append(out, s[i:end:end]) // capacité bornée : essentiel
+	}
+	return out, nil
 }
 
-func (r *Ring) Push(v int) {
-	end := (r.start + r.count) % len(r.buf)
-	r.buf[end] = v
-	if r.count < len(r.buf) {
-		r.count++
-		return
+// Flatten aplatit. Deux passes : compter, puis copier — une seule allocation.
+func Flatten(s [][]int) []int {
+	n := 0
+	for _, part := range s {
+		n += len(part)
 	}
-	// plein : le plus ancien vient d'être écrasé, on avance la fenêtre
-	r.start = (r.start + 1) % len(r.buf)
+	out := make([]int, 0, n)
+	for _, part := range s {
+		out = append(out, part...)
+	}
+	return out
 }
 
-func (r *Ring) Len() int { return r.count }
+// Insert insère vals à l'indice i.
+// CHOIX DOCUMENTÉ : comme slices.Insert, la fonction peut réutiliser le tableau
+// de s. L'appelant doit donc utiliser la valeur retournée et considérer s comme
+// invalide après l'appel.
+func Insert(s []int, i int, vals ...int) []int {
+	if i < 0 {
+		i = 0
+	}
+	if i > len(s) {
+		i = len(s)
+	}
+	out := make([]int, 0, len(s)+len(vals))
+	out = append(out, s[:i]...)
+	out = append(out, vals...)
+	out = append(out, s[i:]...)
+	return out
+}
 
-// Slice retourne une COPIE, du plus ancien au plus récent.
-// Retourner r.buf directement exposerait l'état interne : l'appelant pourrait
-// écrire dedans et casser l'invariant, ou lire des cases non encore écrites.
-func (r *Ring) Slice() []int {
-	out := make([]int, 0, r.count)
-	for i := range r.count {
-		out = append(out, r.buf[(r.start+i)%len(r.buf)])
+// Delete supprime [i, j). Réutilise le tableau : s est invalidé.
+func Delete(s []int, i, j int) []int {
+	i, j = max(0, i), min(len(s), j)
+	if i >= j {
+		return s
+	}
+	return append(s[:i], s[j:]...) // décale à gauche, en place
+}
+
+func Zip(a, b []int) ([][2]int, error) {
+	if len(a) != len(b) {
+		return nil, fmt.Errorf("longueurs différentes : %d et %d", len(a), len(b))
+	}
+	out := make([][2]int, len(a))
+	for i := range a {
+		out[i] = [2]int{a[i], b[i]}
+	}
+	return out, nil
+}
+
+// Window retourne les fenêtres glissantes de taille size.
+// Un slice trop court donne un résultat VIDE, pas une erreur : c'est un cas
+// normal, pas une anomalie.
+func Window(s []int, size int) [][]int {
+	if size <= 0 || len(s) < size {
+		return nil
+	}
+	out := make([][]int, 0, len(s)-size+1)
+	for i := 0; i+size <= len(s); i++ {
+		out = append(out, s[i:i+size:i+size])
 	}
 	return out
 }
 ```
 
-**Les trois points qui font la différence :**
+**Les quatre points de correction :**
 
-1. **`start` + `count`**, pas `start` + `end`. Avec deux indices seulement, « vide » et
-   « plein » donnent la même configuration et deviennent indiscernables. C'est le piège
-   classique du tampon circulaire.
-2. **Le modulo** fait tout le travail d'enroulement. Pas de `if` sur les bords.
-3. **`Slice()` copie.** Retourner une vue interne serait plus rapide et détruirait
-   l'encapsulation : c'est le même arbitrage que dans le projet 1.
-
-Cas limites à vérifier : `size == 1` (chaque `Push` écrase), exactement plein, deux tours
-complets, `Slice()` sur un buffer vide (retourne un slice vide, pas nil — les deux sont
-acceptables si documenté).
+1. **La capacité bornée `s[i:end:end]`** est ce qui distingue une implémentation correcte
+   d'une implémentation seulement fonctionnelle. Sans elle, `append` sur le morceau 1 écrase
+   le premier élément du morceau 2 — silencieusement.
+2. **`(len(s)+size-1)/size`** est la division entière arrondie vers le haut. L'écrire avec des
+   flottants (`math.Ceil`) fonctionne mais introduit une imprécision inutile.
+3. **`Flatten` en deux passes.** Compter d'abord coûte un parcours supplémentaire, mais évite
+   toutes les réallocations. Sur un million d'éléments, c'est plus rapide malgré la passe en
+   plus — un résultat contre-intuitif à vérifier soi-même.
+4. **`Delete` renvoie `append(s[:i], s[j:]...)`.** Le tableau est réutilisé, les éléments sont
+   décalés à gauche. C'est exactement ce que fait `slices.Delete`… à un détail près : depuis
+   Go 1.22, `slices.Delete` **met à zéro** les éléments devenus inaccessibles à la fin, pour
+   que le ramasse-miettes puisse libérer ce qu'ils référençaient. Sur un `[]int` cela ne change
+   rien ; sur un `[]*User` c'est une fuite mémoire évitée. C'est précisément ce qu'on découvre
+   en lisant `go doc -src slices.Delete`, et c'était le but de la dernière consigne.
 
 ## Défi
 

@@ -51,18 +51,26 @@ const (
 	Neptune
 )
 
-func (p Planet) String() string {
+func planetName(p Planet) string {
 	names := [...]string{"", "Mercure", "Vénus", "Terre", "Mars",
 		"Jupiter", "Saturne", "Uranus", "Neptune"}
 	if p < 1 || int(p) >= len(names) {
-		return fmt.Sprintf("Planet(%d)", int(p))
+		return fmt.Sprintf("Planet(%d)", int(p)) // Planet(99)
 	}
 	return names[p]
 }
 ```
 
-`iota + 1` est plus lisible que `_ = iota` suivi de `Mercury`. Le `default` de `String()`
-est indispensable : `Planet(99)` est une valeur légale que le compilateur n'empêche pas.
+`iota + 1` est plus lisible que `_ = iota` suivi de `Mercury`. Le test de bornes est
+indispensable : `Planet(99)` est une valeur parfaitement légale que le compilateur n'empêche
+pas — sans lui, l'accès `names[99]` **panique**. Une énumération Go ne se valide jamais toute
+seule.
+
+`[...]string{…}` est un **tableau** de taille déduite, pas un slice : c'est ce qui est
+disponible à ce stade de la formation.
+
+Au niveau 2, `planetName` deviendra une méthode `String()` et `fmt.Println(p)` l'appellera
+automatiquement — c'est la seule différence, mais elle change l'ergonomie du type.
 
 ## E4 — Constantes non typées
 
@@ -115,21 +123,22 @@ const (
 	EiB // 1 << 60 : tient dans int64 (max ≈ 9,2 EiB)
 )
 
-// String choisit la plus grande unité pertinente.
-func (b ByteSize) String() string {
+// format choisit la plus grande unité pertinente.
+// Au niveau 2, ce sera une méthode String().
+func format(b ByteSize) string {
 	switch {
 	case b >= EiB:
-		return fmt.Sprintf("%.2f EiB", b.in(EiB))
+		return fmt.Sprintf("%.2f EiB", in(b, EiB))
 	case b >= PiB:
-		return fmt.Sprintf("%.2f PiB", b.in(PiB))
+		return fmt.Sprintf("%.2f PiB", in(b, PiB))
 	case b >= TiB:
-		return fmt.Sprintf("%.2f TiB", b.in(TiB))
+		return fmt.Sprintf("%.2f TiB", in(b, TiB))
 	case b >= GiB:
-		return fmt.Sprintf("%.2f GiB", b.in(GiB))
+		return fmt.Sprintf("%.2f GiB", in(b, GiB))
 	case b >= MiB:
-		return fmt.Sprintf("%.2f MiB", b.in(MiB))
+		return fmt.Sprintf("%.2f MiB", in(b, MiB))
 	case b >= KiB:
-		return fmt.Sprintf("%.2f KiB", b.in(KiB))
+		return fmt.Sprintf("%.2f KiB", in(b, KiB))
 	default:
 		return fmt.Sprintf("%d B", int64(b))
 	}
@@ -138,7 +147,7 @@ func (b ByteSize) String() string {
 // in exprime b dans l'unité donnée, en flottant.
 // La conversion en float64 n'a lieu QU'ICI, au dernier moment : la valeur
 // exacte reste en int64 tout le reste du temps.
-func (b ByteSize) in(unit ByteSize) float64 {
+func in(b, unit ByteSize) float64 {
 	return float64(b) / float64(unit)
 }
 
@@ -156,8 +165,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "valeur négative : %d\n", n)
 		os.Exit(1)
 	}
-	fmt.Printf("%d B = %v\n", n, ByteSize(n))
-	fmt.Printf("max int64 = %v\n", ByteSize(math.MaxInt64))
+	fmt.Printf("%d B = %s\n", n, format(ByteSize(n)))
+	fmt.Printf("max int64 = %s\n", format(ByteSize(math.MaxInt64)))
 }
 ```
 

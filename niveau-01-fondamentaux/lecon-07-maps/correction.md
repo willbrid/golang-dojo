@@ -168,87 +168,146 @@ recherche).
 
 ## Défi
 
-**a) GroupBy**
+**a) Regroupements**
 
 ```go
-func GroupBy(words []string, key func(string) string) map[string][]string {
+func GroupByFirstLetter(words []string) map[string][]string {
 	out := make(map[string][]string)
 	for _, w := range words {
-		out[key(w)] = append(out[key(w)], w)
+		if w == "" {
+			continue
+		}
+		r := []rune(w)[0] // et non w[0], qui donnerait un demi-caractère accentué
+		key := strings.ToLower(string(r))
+		out[key] = append(out[key], w)
 	}
 	return out
 }
 
-// Par première lettre
-GroupBy(words, func(w string) string { return string([]rune(w)[0]) })
-// Par longueur
-GroupBy(words, func(w string) string { return strconv.Itoa(len([]rune(w))) })
-// Par anagramme : LA clé canonique est le mot avec ses lettres TRIÉES
-GroupBy(words, func(w string) string {
-	r := []rune(strings.ToLower(w))
-	slices.Sort(r)
-	return string(r)
-})
+func GroupByLength(words []string) map[int][]string {
+	out := make(map[int][]string)
+	for _, w := range words {
+		n := len([]rune(w)) // des CARACTÈRES, pas des octets
+		out[n] = append(out[n], w)
+	}
+	return out
+}
+
+// GroupByAnagram : la clé canonique d'un anagramme est le mot dont les lettres
+// ont été TRIÉES. Deux mots sont anagrammes si et seulement si leurs lettres
+// triées sont identiques — la fonction de clé transforme une relation
+// d'équivalence en une valeur comparable.
+func GroupByAnagram(words []string) map[string][]string {
+	out := make(map[string][]string)
+	for _, w := range words {
+		r := []rune(strings.ToLower(w))
+		slices.Sort(r)
+		key := string(r)
+		out[key] = append(out[key], w)
+	}
+	return out
+}
 ```
 
-Le cas anagramme est le vrai exercice : deux mots sont anagrammes **si et seulement si**
-leurs lettres triées sont identiques. La fonction de clé transforme une relation
-d'équivalence en une valeur comparable — c'est le patron général du regroupement.
+`out[key] = append(out[key], w)` sur une clé absente fonctionne : `out[key]` vaut `nil`, et
+`append` sur un slice nil alloue. C'est l'idiome de regroupement le plus fréquent en Go.
 
-**b) LRU**
+Les trois fonctions ne diffèrent **que par le calcul de la clé** : c'est exactement ce que la
+leçon 11 permettra de factoriser en passant une fonction en paramètre.
 
-Une map seule ne suffit pas : elle donne l'accès en O(1) mais ne dit pas quel élément est le
-plus ancien. Il faut y ajouter une structure qui maintient **l'ordre d'usage** et permet de
-déplacer un élément en tête en O(1) — une **liste doublement chaînée**. La map stocke alors
-`clé → pointeur vers le nœud`.
+**b) Opérations d'ensemble**
 
 ```go
-type entry struct {
-	key   string
-	value int
-	prev  *entry
-	next  *entry
+func Union(a, b map[string]bool) map[string]bool {
+	out := make(map[string]bool, len(a)+len(b))
+	maps.Copy(out, a) // Go 1.21+
+	maps.Copy(out, b)
+	return out
 }
 
-type LRU struct {
-	capacity int
-	items    map[string]*entry
-	head     *entry // le plus récemment utilisé
-	tail     *entry // le plus ancien : la victime de l'éviction
+// Intersection itère sur LE PLUS PETIT des deux ensembles.
+// Coût : O(min(|a|,|b|)) au lieu de O(|a|). Sur 10 éléments contre 1 000 000,
+// c'est 100 000 fois moins de tours de boucle pour le même résultat.
+func Intersection(a, b map[string]bool) map[string]bool {
+	if len(b) < len(a) {
+		a, b = b, a
+	}
+	out := make(map[string]bool)
+	for k := range a {
+		if b[k] {
+			out[k] = true
+		}
+	}
+	return out
 }
 
-func (c *LRU) Get(key string) (int, bool) {
-	e, ok := c.items[key]
-	if !ok {
-		return 0, false
+func Difference(a, b map[string]bool) map[string]bool { // a \ b
+	out := make(map[string]bool)
+	for k := range a {
+		if !b[k] {
+			out[k] = true
+		}
 	}
-	c.moveToFront(e) // un Get COMPTE comme un usage
-	return e.value, true
+	return out
 }
 
-func (c *LRU) Put(key string, value int) {
-	if e, ok := c.items[key]; ok {
-		e.value = value
-		c.moveToFront(e)
-		return
+func IsSubset(a, b map[string]bool) bool { // a ⊆ b ?
+	if len(a) > len(b) {
+		return false // court-circuit gratuit
 	}
-	if len(c.items) == c.capacity {
-		delete(c.items, c.tail.key) // évincer AVANT d'insérer
-		c.remove(c.tail)
+	for k := range a {
+		if !b[k] {
+			return false
+		}
 	}
-	e := &entry{key: key, value: value}
-	c.items[key] = e
-	c.pushFront(e)
+	return true
 }
 ```
 
-Les deux erreurs classiques : oublier que `Get` rafraîchit l'ordre, et oublier de retirer la
-clé de la **map** en même temps que le nœud de la liste (fuite mémoire silencieuse : la map
-grossit indéfiniment).
+Noter que `Difference` **ne peut pas** échanger les arguments : elle n'est pas symétrique.
+L'optimisation de `Intersection` ne fonctionne que parce que l'intersection l'est.
 
-`container/list` de la stdlib fait le travail de la liste, mais l'écrire à la main une fois
-apprend beaucoup plus. Version production : y ajouter un `sync.Mutex` (niveau 4) et des
-métriques de taux de succès (niveau 9).
+**c) TopN déterministe**
+
+```go
+func TopN(counts map[string]int, n int) []string {
+	words := slices.Collect(maps.Keys(counts))
+	slices.SortFunc(words, func(a, b string) int {
+		if c := cmp.Compare(counts[b], counts[a]); c != 0 {
+			return c // fréquence décroissante
+		}
+		return cmp.Compare(a, b) // départage alphabétique : LE point crucial
+	})
+	return words[:min(n, len(words))]
+}
+```
+
+Sans le départage alphabétique, deux mots de même fréquence sortent dans un ordre qui dépend
+de l'itération de la map — donc **différent à chaque exécution**. Sur vingt lancements avec des
+ex æquo, on obtient plusieurs sorties distinctes.
+
+C'est le scénario exact du test qui passe cent fois en local et échoue une fois en intégration
+continue, sans qu'on ait rien changé. Le déterminisme n'est pas une coquetterie : c'est une
+propriété qu'on décide d'avoir ou de subir.
+
+`cmp.Compare` est préférable à la soustraction `counts[b] - counts[a]` : la soustraction peut
+déborder sur de très grands entiers, et le tri devient alors incohérent.
+
+**d) Coût mémoire**
+
+| Structure | Mémoire pour 0..1 000 000 | Rapport |
+|---|---|---|
+| `[]bool` | ~1 Mo (1 octet par entrée) | référence |
+| `map[int]bool` | ~50 à 90 Mo | ×50 à ×90 |
+
+Une map stocke, pour chaque entrée, la clé, la valeur, un octet de contrôle, et maintient un
+facteur de charge inférieur à 1 — d'où le surcoût. Le `[]bool` n'a aucun surcoût par entrée et
+se parcourt séquentiellement, ce qui le rend aussi bien plus rapide.
+
+**Quand le `[]bool` cesse d'être le bon choix :** dès que le domaine des valeurs est
+**creux**. Un ensemble contenant `{1, 7, 2000000000}` demanderait un `[]bool` de deux
+gigaoctets, contre trois entrées dans une map. Le critère est le rapport entre le nombre
+d'éléments et l'étendue des valeurs possibles — pas le nombre d'éléments seul.
 
 ## Réponses du quiz
 
@@ -265,7 +324,8 @@ métriques de taux de succès (niveau 9).
 7. `fatal error: concurrent map writes` — une erreur **fatale**, non récupérable par
    `recover`. Le runtime la détecte délibérément plutôt que de corrompre la table.
 8. Rien. `delete` sur une clé absente est une opération valide sans effet.
-9. `struct{}` n'occupe aucun octet, mais `map[string]bool` se lit mieux (`if set[k]`).
-   Préférer `bool` sauf enjeu mémoire mesuré.
+9. Avec une map dont la valeur ne sert pas : `map[T]bool` de préférence, parce que `if set[k]`
+   se lit directement. La variante `map[T]struct{}` n'occupe aucun octet par valeur, mais
+   l'économie ne compte qu'au-delà de plusieurs millions d'entrées.
 10. **Oui.** Une map se comporte comme une référence : la fonction reçoit un descripteur qui
     pointe vers la même table.
