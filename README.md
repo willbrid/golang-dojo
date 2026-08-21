@@ -12,8 +12,9 @@ Vérifiée auprès des sources officielles : [go.dev/VERSION](https://go.dev/VER
 
 ```
 .
-├── SYLLABUS.md                  Le plan détaillé des 10 niveaux (~96 leçons)
+├── SYLLABUS.md                  Le plan détaillé des 13 niveaux (~124 leçons)
 ├── PROGRESSION.md               Mon journal : acquis, lacunes, erreurs récurrentes
+├── evaluations/                 Tests de positionnement et évaluations cumulatives
 ├── ressources/                  Aide-mémoire, liens officiels, glossaire
 ├── niveau-01-fondamentaux/
 │   ├── README.md                Sommaire et objectifs du niveau
@@ -67,7 +68,10 @@ go version
 # 2. Lire le plan
 less SYLLABUS.md
 
-# 3. Commencer
+# 3. Se positionner AVANT de commencer (ne compile rien : réponds de tête)
+less evaluations/00-test-de-positionnement.md
+
+# 4. Commencer là où le test m'a placé
 less niveau-01-fondamentaux/lecon-01-environnement/cours.md
 ```
 
