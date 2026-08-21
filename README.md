@@ -101,7 +101,7 @@ go version
 | 12 | [Outils et production](niveau-12-outils-production/) | 9 | Projet 8 — Microservice |
 | 13 | [Expert](niveau-13-expert/) | 8 | Projet final |
 
-Détail complet, ordre des leçons et correspondance avec les chapitres de *Pro Go* dans
+Détail complet et ordre des leçons dans
 [SYLLABUS.md](SYLLABUS.md).
 
 ### L'ordre est une contrainte, pas une suggestion

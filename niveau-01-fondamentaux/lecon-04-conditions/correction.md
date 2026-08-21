@@ -2,63 +2,7 @@
 
 > ⚠️ À ne lire qu'après avoir essayé.
 
-## E1 — FizzBuzz
-
-```go
-for i := range 100 {
-	n := i + 1
-	switch {
-	case n%15 == 0:
-		fmt.Println("FizzBuzz")
-	case n%3 == 0:
-		fmt.Println("Fizz")
-	case n%5 == 0:
-		fmt.Println("Buzz")
-	default:
-		fmt.Println(n)
-	}
-}
-```
-
-L'ordre des cas compte : `n%15` doit venir en premier, sinon 15 sort en `Fizz`. Un `switch`
-s'arrête au premier cas vrai — il n'y a pas de « chute » vers les suivants.
-
-Variante plus élégante, sans test de 15 :
-
-```go
-s := ""
-if n%3 == 0 { s += "Fizz" }
-if n%5 == 0 { s += "Buzz" }
-if s == "" { s = strconv.Itoa(n) }
-```
-
-## E2 — Ordre des maps
-
-Les clés sortent dans un ordre différent à chaque exécution. Le runtime Go choisit un point
-de départ aléatoire dans les compartiments de la table de hachage.
-
-C'est **délibéré** : sans cette randomisation, l'ordre serait stable par accident, du code
-finirait par en dépendre, et une simple mise à jour de Go (ou un ajout de clé provoquant un
-redimensionnement) casserait le programme. Go préfère faire échouer tout de suite ce qui
-n'est pas garanti. C'est la même philosophie que le refus des imports inutilisés.
-
-## E3 — La copie de `range`
-
-```go
-type Counter struct{ N int }
-cs := []Counter{{1}, {2}, {3}}
-
-for _, c := range cs { c.N++ }        // sans effet : c est une copie
-fmt.Println(cs)                        // [{1} {2} {3}]
-
-for i := range cs { cs[i].N++ }        // correct
-fmt.Println(cs)                        // [{2} {3} {4}]
-```
-
-`range` copie chaque élément dans la variable de boucle. Modifier la copie ne touche pas le
-slice. Pour muter : passer par l'indice.
-
-## E4 — Aplatir
+## E1 — Aplatir
 
 ```go
 func check(name string, age int, active bool) string {
@@ -75,194 +19,300 @@ func check(name string, age int, active bool) string {
 }
 ```
 
-Quatre niveaux d'imbrication deviennent zéro. Les conditions d'échec se lisent en séquence,
-et le cas normal est la dernière ligne. C'est la forme attendue en revue de code Go.
+Quatre niveaux d'imbrication deviennent zéro. Les conditions d'échec se lisent en séquence et
+le cas normal est la dernière ligne. Noter aussi que l'ordre des tests **change les messages**
+sur une entrée doublement invalide : `check("", 10, false)` retourne « nom manquant », pas
+« mineur ». Cet ordre est un choix, à assumer.
 
-## E5 — Labels
+## E2 — IMC
 
 ```go
-target := 12
-found := false
-search:
-for i, a := range nums {
-	for j, b := range nums[i+1:] {
-		if a+b == target {
-			fmt.Printf("indices %d et %d\n", i, i+1+j)
-			found = true
-			break search
-		}
+func BMICategory(weightKg, heightM float64) string {
+	if heightM <= 0 {
+		return "taille invalide"
 	}
-}
-if !found {
-	fmt.Println("aucune paire")
+	bmi := weightKg / (heightM * heightM)
+	switch {
+	case bmi < 18.5:
+		return "maigreur"
+	case bmi < 25:
+		return "normal"
+	case bmi < 30:
+		return "surpoids"
+	default:
+		return "obésité"
+	}
 }
 ```
 
-Attention à `i+1+j` : `j` est l'indice **dans le sous-slice**, pas dans `nums`. Erreur
-classique.
+En intervertissant `bmi < 25` et `bmi < 18.5`, **toute** valeur inférieure à 25 tombe dans le
+premier cas : « maigreur » disparaît complètement. Le programme continue de fonctionner, sans
+erreur, en donnant systématiquement une mauvaise réponse pour une plage entière. C'est
+exactement le type de bug qu'un test aux bornes attraperait (niveau 5).
 
-Alternative idiomatique : extraire dans une fonction et utiliser `return` — souvent plus
-propre qu'un label.
+## E3 — Jours du mois
 
-## Exercice intermédiaire — `histogram`
+```go
+func DaysInMonth(month, year int) (int, error) {
+	switch month {
+	case 1, 3, 5, 7, 8, 10, 12:
+		return 31, nil
+	case 4, 6, 9, 11:
+		return 30, nil
+	case 2:
+		if isLeap(year) {
+			return 29, nil
+		}
+		return 28, nil
+	default:
+		return 0, fmt.Errorf("mois invalide : %d", month)
+	}
+}
+
+func isLeap(y int) bool {
+	return y%4 == 0 && (y%100 != 0 || y%400 == 0)
+}
+```
+
+| Année | Bissextile ? | Pourquoi |
+|---|---|---|
+| 1900 | **non** | divisible par 100 mais pas par 400 |
+| 2000 | oui | divisible par 400 |
+| 2024 | oui | divisible par 4, pas par 100 |
+| 2100 | **non** | même cas que 1900 |
+
+La règle « divisible par 4 » seule se trompe une fois par siècle. Elle a produit de vrais
+incidents en production : plusieurs systèmes ont eu des bugs de date le 29 février 2000 et
+2100 fera de même. `time.Date` de la bibliothèque standard gère cela correctement — à
+préférer en production (niveau 4).
+
+## E4 — `fallthrough`
+
+```go
+switch n {
+case 1:
+	fmt.Println("un")
+	fallthrough
+case 2:
+	fmt.Println("deux")
+case 3:
+	fmt.Println("trois")
+}
+// n == 1 → affiche « un » PUIS « deux »
+```
+
+`fallthrough` exécute le cas suivant **sans réévaluer sa condition** : avec `n == 1`, on
+affiche « deux » alors que `n != 2`. C'est ce qui le rend déroutant.
+
+La version à valeurs multiples (`case 1, 2:`) est presque toujours plus lisible. `fallthrough`
+reste justifié dans le cas rare où les cas sont **cumulatifs** : un niveau de permission qui
+accorde tous les droits des niveaux inférieurs, par exemple. Il doit alors être commenté.
+
+## E5 — Portée
+
+Le code **ne compile pas** :
+
+```
+./main.go:8:14: undefined: v
+```
+
+`v` déclarée dans l'instruction d'initialisation du `if` n'existe que dans le `if` et ses
+`else if`/`else`. Le dernier `fmt.Println(v)` est hors de cette portée. C'est précisément
+l'intérêt de la construction : la variable ne survit pas là où elle n'a plus de sens.
+
+## Exercice intermédiaire — `taxes`
 
 ```go
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"slices"
 	"strconv"
-	"strings"
 )
 
-const maxBarWidth = 50
+// Barème PAR PART. Les seuils sont des bornes SUPÉRIEURES incluses :
+// un revenu de 11 000 € pile est intégralement taxé à 0 %.
+// Choix documenté, cohérent d'une tranche à l'autre.
+const (
+	seuil1, taux1 = 11_000.0, 0.00
+	seuil2, taux2 = 28_000.0, 0.11
+	seuil3, taux3 = 78_000.0, 0.30
+	taux4         = 0.41
+)
 
-// readValues lit des entiers depuis r. Retourne les valeurs valides et le nombre de rejets.
-func readValues(r *os.File) ([]int, int) {
-	sc := bufio.NewScanner(r)
-	sc.Split(bufio.ScanWords) // découpe sur les espaces ET les retours à la ligne
+// Tax calcule l'impôt PAR TRANCHES et retourne aussi la tranche marginale.
+// Fonction pure : aucun affichage, aucune sortie.
+func Tax(income, parts float64) (amount, marginalRate float64, err error) {
+	if income < 0 {
+		return 0, 0, fmt.Errorf("revenu négatif : %.2f", income)
+	}
+	if parts <= 0 {
+		return 0, 0, fmt.Errorf("nombre de parts invalide : %.2f", parts)
+	}
 
-	var values []int
-	rejected := 0
-	for sc.Scan() {
-		n, err := strconv.Atoi(sc.Text())
-		if err != nil || n < 0 {
-			fmt.Fprintf(os.Stderr, "valeur ignorée : %q\n", sc.Text())
-			rejected++
-			continue
+	q := income / parts // quotient familial
+	marginalRate = taux1
+
+	perPart := 0.0
+	if q > seuil3 {
+		perPart += (q - seuil3) * taux4
+		marginalRate = taux4
+	}
+	if q > seuil2 {
+		perPart += (min(q, seuil3) - seuil2) * taux3
+		if marginalRate == taux1 {
+			marginalRate = taux3
 		}
-		values = append(values, n)
 	}
-	return values, rejected
-}
-
-// stats calcule le maximum et la moyenne. Fonction pure : aucun affichage.
-func stats(values []int) (max int, mean float64) {
-	if len(values) == 0 {
-		return 0, 0
-	}
-	sum := 0
-	for _, v := range values {
-		sum += v
-		max = maxOf(max, v)
-	}
-	return max, float64(sum) / float64(len(values))
-}
-
-func maxOf(a, b int) int { if a > b { return a }; return b } // ou simplement max(a, b), Go 1.21+
-
-func render(values []int, w *os.File) {
-	max, mean := stats(values)
-	labelWidth := len(strconv.Itoa(max))
-
-	for _, v := range values {
-		width := 0
-		if max > 0 {
-			width = v * maxBarWidth / max // mise à l'échelle en ENTIERS : pas d'arrondi flottant
+	if q > seuil1 {
+		perPart += (min(q, seuil2) - seuil1) * taux2
+		if marginalRate == taux1 {
+			marginalRate = taux2
 		}
-		fmt.Fprintf(w, "%*d │ %s\n", labelWidth, v, strings.Repeat("█", width))
 	}
-	fmt.Fprintf(w, "%s └%s\n", strings.Repeat(" ", labelWidth), strings.Repeat("─", maxBarWidth))
-	fmt.Fprintf(w, "%s   max = %d   n = %d   moyenne = %.2f\n",
-		strings.Repeat(" ", labelWidth), max, len(values), mean)
+	return perPart * parts, marginalRate, nil
 }
 
 func main() {
-	values, rejected := readValues(os.Stdin)
-	if len(values) == 0 {
-		fmt.Fprintln(os.Stderr, "aucune valeur exploitable")
+	if len(os.Args) != 3 {
+		fmt.Fprintln(os.Stderr, "usage: taxes <revenu> <parts>")
 		os.Exit(1)
 	}
-	slices.Sort(values)
-	render(values, os.Stdout)
-	if rejected > 0 {
+	income, err := strconv.ParseFloat(os.Args[1], 64)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "revenu invalide : %v\n", err)
 		os.Exit(1)
 	}
+	parts, err := strconv.ParseFloat(os.Args[2], 64)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "parts invalides : %v\n", err)
+		os.Exit(1)
+	}
+
+	amount, rate, err := Tax(income, parts)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("revenu imposable : %.0f €\n", income)
+	fmt.Printf("parts            : %.1f\n", parts)
+	fmt.Printf("quotient familial: %.0f €\n", income/parts)
+	fmt.Printf("tranche marginale: %.0f %%\n", rate*100)
+	fmt.Printf("impôt            : %.0f €\n", amount)
+	if income > 0 {
+		fmt.Printf("taux moyen       : %.2f %%\n", amount/income*100)
+	}
 }
 ```
 
-**Points de correction :**
-- `bufio.ScanWords` gère espaces et retours à la ligne d'un coup — pas besoin de découper à
-  la main.
-- `v * maxBarWidth / max` en **entiers** : multiplier avant de diviser évite à la fois le
-  flottant et la perte de précision. Attention au débordement si les valeurs sont énormes.
-- `%*d` prend la largeur en argument : c'est ce qui aligne la colonne sans calcul manuel.
-- `slices.Sort` est idiomatique depuis Go 1.21. Écrire un tri à bulles à la main
-  « fonctionne » mais n'est pas idiomatique — et la question portait précisément là-dessus.
-- Les trois responsabilités (lire, calculer, afficher) sont dans trois fonctions distinctes.
+**Contrainte 1 — le calcul par tranches.** L'erreur universelle est d'écrire :
+```go
+if q > 28000 { return q * 0.30 }   // FAUX
+```
+Sur 28 001 €, cela donnerait 8 400 € d'impôt au lieu d'environ 1 870 €. Seule la **fraction**
+du revenu au-dessus du seuil est taxée au taux supérieur. La conséquence, souvent mal comprise
+du grand public : **gagner un euro de plus ne peut jamais faire baisser le revenu net**.
 
-## Défi — Crible et Goldbach
+**Le piège caché — le seuil exact.** À 11 000 € pile, faut-il taxer ? Ici la condition est
+`q > seuil1`, donc non : la borne est incluse dans la tranche inférieure. Ce qui compte n'est
+pas le choix, mais qu'il soit **le même aux quatre seuils**. Une solution qui utilise `>` à un
+seuil et `>=` à un autre crée une discontinuité d'un euro, invisible en test et fausse en
+production.
+
+**Contrainte 7 — aucun `else`.** Chaque `if` ajoute une contribution indépendante et les
+conditions ne sont pas exclusives : c'est ce qui permet de s'en passer.
+
+## Défi
+
+**a) Machine à états**
 
 ```go
-func Primes(n int) []int {
-	if n < 2 {
-		return nil
-	}
-	composite := make([]bool, n+1) // []bool : 1 octet par entrée, contigu en mémoire.
-	// Une map coûterait ~50 octets par entrée et détruirait la localité de cache.
-	var primes []int
+type State int
 
-	for p := 2; p <= n; p++ {
-		if composite[p] {
-			continue
-		}
-		primes = append(primes, p)
-		for m := p * p; m <= n; m += p { // démarrer à p² : les multiples plus petits
-			composite[m] = true          // ont déjà été marqués par un facteur inférieur
-		}
+const (
+	Rouge State = iota
+	Vert
+	Orange
+)
+
+func Next(s State) State {
+	switch s {
+	case Rouge:
+		return Vert
+	case Vert:
+		return Orange
+	case Orange:
+		return Rouge
+	default:
+		return Rouge // état inconnu : on repart d'un état sûr
 	}
-	return primes
+}
+
+func Seconds(s State) int {
+	switch s {
+	case Rouge:
+		return 60
+	case Vert:
+		return 45
+	case Orange:
+		return 5
+	default:
+		return 0
+	}
 }
 ```
 
-Complexité : O(n log log n). Sur un million, quelques millisecondes.
+**b) Le piège de l'exhaustivité**
 
-```go
-func Goldbach(n int) (int, int, int, bool) {
-	primes := Primes(n)
-	isPrime := make([]bool, n+1)
-	for _, p := range primes {
-		isPrime[p] = true
-	}
-	for even := 4; even <= n; even += 2 {
-		found := false
-		for _, p := range primes {
-			if p > even/2 {
-				break
-			}
-			if isPrime[even-p] { // test O(1) grâce au tableau
-				found = true
-				break
-			}
-		}
-		if !found {
-			return even, 0, 0, false // contre-exemple
-		}
-	}
-	return 0, 0, 0, true
-}
-```
+Ajouter `Clignotant` **compile parfaitement**. À l'exécution, `Next(Clignotant)` tombe dans le
+`default` et retourne `Rouge` : la machine à états perd silencieusement un état. Sans
+`default`, la fonction retournerait la zéro-valeur `State(0)` — soit `Rouge` également, mais
+par accident.
 
-L'astuce est le **tableau de test d'appartenance** : au lieu de chercher `even - p` dans la
-liste triée (O(log n) par recherche dichotomique), on teste en O(1). C'est un échange
-mémoire contre temps — le raisonnement central du niveau 8.
+Ce que cela révèle : **les énumérations Go ne sont pas des types somme.** `State` est un `int`
+déguisé ; `State(42)` est une valeur parfaitement légale que le compilateur ne questionne pas.
+Rust vérifie l'exhaustivité d'un `match` sur un `enum` et refuse de compiler si un variant
+manque ; Java a des `enum` qui sont de vraies classes fermées. Go n'offre ni l'un ni l'autre —
+c'est le prix de sa simplicité.
+
+Parades : le linter `exhaustive` (inclus dans `golangci-lint`) signale les `switch` incomplets
+sur un type énuméré, et un `default` qui **panique** ou journalise rend le trou visible en test
+plutôt qu'invisible en production.
+
+**c) Trois implémentations**
+
+| | `switch` | table associative | tableau indexé |
+|---|---|---|---|
+| Lisibilité | excellente | bonne | moyenne (il faut décoder les indices) |
+| Coût | quelques comparaisons | hachage + indirection | un accès mémoire |
+| Valeur invalide | `default` explicite | clé absente → zéro-valeur silencieuse | **panique** (hors bornes) |
+| Ajout d'un état | une ligne, mais dans chaque `switch` | une ligne, en un seul endroit | une ligne, en un seul endroit |
+
+Jusqu'à une dizaine d'états, le `switch` gagne : il est explicite, sans allocation, et le
+`default` traite le cas invalide. Au-delà, ou quand la table doit être modifiée à l'exécution,
+la table associative devient préférable — la donnée est alors centralisée en un seul endroit
+au lieu d'être dispersée dans plusieurs `switch` à maintenir cohérents.
+
+Le tableau indexé est le plus rapide mais le plus fragile : il suppose que les valeurs de
+l'énumération sont contiguës et commencent à 0, hypothèse qu'un `iota + 1` casse déjà.
 
 ## Réponses du quiz
 
-1. **Un seul** : `for`. Pas de `while`, pas de `do…while`, pas de `foreach`.
-2. Non. Go ne « tombe » pas d'un cas au suivant : le `break` est implicite. `fallthrough`
-   force le passage, mais reste rare.
-3. Il force l'exécution du cas **suivant**, sans réévaluer sa condition.
-4. Non : `v` est une **copie** de l'élément. Il faut passer par `items[i]`.
-5. Non, il change à chaque exécution. Ce n'est **pas** un bug : le runtime randomise
-   délibérément pour empêcher toute dépendance à un ordre non garanti.
-6. `012`. Depuis **Go 1.22** (`range` sur un entier).
-7. `v` n'existe que dans le `if` et son `else`. C'est tout l'intérêt de la forme.
-8. La variable de boucle est désormais **recréée à chaque itération**. Cela corrige le
-   classique des closures/goroutines qui capturaient toutes la même variable et affichaient
-   la dernière valeur.
-9. À sortir (`break`) ou passer au tour suivant (`continue`) d'une boucle **externe** depuis
-   une boucle imbriquée — ou depuis un `select`.
+1. **Non**, et `gofmt` les retire. La condition n'est pas parenthésée en Go.
+2. **Non.** Go exige un `bool`. Ce choix supprime les `if (x = 5)` accidentels et les
+   conversions implicites vers booléen, source de bugs dans d'autres langages.
+3. `v` n'existe que dans le `if` et ses branches `else`/`else if`.
+4. **Non** : Go ne « tombe » pas d'un cas au suivant. Le `break` implicite supprime le bug
+   classique du C.
+5. Il exécute le cas **suivant** sans réévaluer sa condition.
+6. Un `switch` sans expression teste des conditions booléennes ; il remplace avantageusement
+   trois `else if` ou plus.
+7. **Dans l'ordre d'écriture** : le premier cas vrai gagne.
+8. Parce qu'il ajoute un niveau d'indentation sans rien apporter : le `return` a déjà quitté
+   la fonction. C'est l'une des remarques les plus fréquentes en revue de code Go.
+9. Oui pour plusieurs valeurs (`case 1, 2, 3:`). **Non** pour une plage : Go n'a pas de
+   `case 1..5`. Il faut un `switch` sans expression avec `case n >= 1 && n <= 5:`.
+10. Oui, `goto` existe, restreint à la fonction courante. Non, on ne l'utilise pas : les
+    labels sur les boucles couvrent les besoins légitimes.

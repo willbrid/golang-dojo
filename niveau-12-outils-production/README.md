@@ -9,4 +9,3 @@
 > lacunes réelles consignées dans [PROGRESSION.md](../PROGRESSION.md) — plutôt que figé
 > d'avance.
 
-**Chapitres de *Pro Go* couverts :** au-delà du livre

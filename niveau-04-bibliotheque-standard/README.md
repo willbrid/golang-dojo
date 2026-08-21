@@ -9,4 +9,3 @@
 > lacunes réelles consignées dans [PROGRESSION.md](../PROGRESSION.md) — plutôt que figé
 > d'avance.
 
-**Chapitres de *Pro Go* couverts :** 15-stringsandregexp, 16-usingstrings, 17-mathandsorting, 18-datesandtimes, 19-readersandwriters, 20-readersandwritersjson, 21-files, 22-htmltext

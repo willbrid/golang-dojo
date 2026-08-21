@@ -9,4 +9,3 @@
 > lacunes réelles consignées dans [PROGRESSION.md](../PROGRESSION.md) — plutôt que figé
 > d'avance.
 
-**Chapitres de *Pro Go* couverts :** 23-httpserver, 24-httpclient (+ TCP/UDP, TLS, WebSockets, gRPC, au-delà du livre)

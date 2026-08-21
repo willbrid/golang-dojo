@@ -9,4 +9,3 @@
 > lacunes réelles consignées dans [PROGRESSION.md](../PROGRESSION.md) — plutôt que figé
 > d'avance.
 
-**Chapitres de *Pro Go* couverts :** prolonge 10-methodsAndInterfaces ; contenu postérieur au livre (Go 1.18 à 1.27)
