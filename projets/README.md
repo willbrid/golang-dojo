@@ -4,7 +4,7 @@ Neuf projets de difficulté croissante. Chacun suit le même déroulé :
 
 1. **Spécifications** — ce que le programme doit faire.
 2. **Contraintes** — ce qui est imposé, y compris les difficultés glissées exprès.
-3. **Architecture suggérée** — une piste, pas une obligation : je conçois d'abord ma solution.
+3. **Architecture suggérée** — une piste, pas une obligation : concevoir d'abord sa propre solution.
 4. **Tests à écrire** — la liste minimale, à compléter.
 5. **Revue de code** — verdict sur les quatre axes de qualité.
 
@@ -23,5 +23,5 @@ Neuf projets de difficulté croissante. Chacun suit le même déroulé :
 La **numérotation** est celle du programme initial ; la colonne **Ordre** donne la
 chronologie réelle, qui suit les prérequis techniques.
 
-**Mon code de projet va dans `mes-solutions/projets/`** — ignoré par git, comme le reste
-de mon code d'apprentissage. Les spécifications, elles, restent versionnées ici.
+**Le code des projets va dans `mes-solutions/projets/`** — ignoré par git, comme le reste
+du code d'entraînement. Les spécifications, elles, restent versionnées ici.

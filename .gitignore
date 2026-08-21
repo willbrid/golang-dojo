@@ -1,7 +1,10 @@
 # ---------------------------------------------------------------------------
-# Mes codes d'apprentissage : ils restent locaux, ils ne sont jamais poussés.
+# Tout ce qui est personnel reste local : le dépôt publié doit rester utilisable
+# tel quel par n'importe qui.
 # ---------------------------------------------------------------------------
 mes-solutions/
+PROGRESSION.md
+evaluations/
 
 # Binaires compilés
 bin/
