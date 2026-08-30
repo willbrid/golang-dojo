@@ -43,6 +43,85 @@ Le corollaire idiomatique : **concevoir ses types pour que la zéro-valeur soit 
 déverrouillé prêt à l'emploi. Aucun constructeur n'est nécessaire. C'est un critère de
 qualité d'API auquel on reviendra au niveau 2.
 
+#### `nil` n'est pas ce que `fmt` affiche
+
+Piège majeur : l'affichage d'une valeur nil ne ressemble pas à `nil`.
+
+```go
+var s []int
+var m map[string]int
+var p *int
+
+fmt.Printf("%v %v %v\n", s, m, p)          // []  map[]  <nil>
+fmt.Println(s == nil, m == nil, p == nil)   // true true true
+```
+
+Les trois valeurs **sont** nil. Mais `%v` sur une slice ou une map imprime leur
+**contenu** : une slice nil n'a aucun élément (`[]`), une map nil aucune entrée
+(`map[]`). Un pointeur n'a pas de contenu — la seule chose à en dire est qu'il ne
+pointe nulle part (`<nil>`).
+
+**Ne jamais conclure « ce n'est pas nil » parce qu'on voit `[]`. Pour tester nil, on
+compare à nil.**
+
+#### Une slice nil est utilisable ; une map nil ne l'est qu'en lecture
+
+C'est l'asymétrie qui piège tout le monde.
+
+| | slice nil | map nil |
+|---|---|---|
+| `len` | `0` ✅ | `0` ✅ |
+| lire / parcourir (`range`) | ✅ | ✅ |
+| **ajouter un élément** | `append` ✅ **fonctionne** | **panique** ❌ |
+
+```go
+var s []int
+s = append(s, 1)            // OK : append alloue et RETOURNE une nouvelle slice
+
+var m map[string]int
+fmt.Println(m["absent"])    // OK : 0 — lire ne réclame aucun stockage
+m["x"] = 1                  // panic: assignment to entry in nil map
+```
+
+La lecture d'une clé absente rend la zéro-valeur du type des valeurs, table allouée ou
+non : rien à allouer, tout est cohérent. L'écriture, elle, réclame une table qui
+n'existe pas. Go aurait pu l'allouer en silence ; il a choisi de paniquer, parce qu'une
+map nil est presque toujours une map qu'on a **oublié** d'initialiser — mieux vaut
+l'échec bruyant que l'écriture dans une structure que personne ne verra jamais.
+
+`append` s'en sort parce qu'il **retourne** la nouvelle slice ; une map se modifie en
+place, il n'y a pas de valeur de retour où glisser la table fraîchement créée. D'où le
+`make` obligatoire.
+
+Le bug classique, celui qu'on rencontre en vrai :
+
+```go
+type Config struct {
+	Tags map[string]string   // nil tant que personne n'a appelé make()
+}
+
+var c Config
+c.Tags["env"] = "prod"       // panic
+```
+
+Une struct dont la zéro-valeur contient une map n'est **pas** utilisable en écriture :
+c'est le contre-exemple direct du principe « la zéro-valeur doit être utile ».
+
+#### Pourquoi un tableau, lui, ne peut pas être nil
+
+`var t [3]int` affiche `[0 0 0]`, jamais `nil`. La raison est structurelle :
+
+- **Un tableau est une valeur**, et sa taille fait partie de son type — `[3]int` et
+  `[4]int` sont deux types *différents*. Les trois entiers existent en mémoire dès la
+  déclaration ; il n'y a aucun état « absent » à représenter.
+- **Une slice est un descripteur de trois mots** : pointeur vers un tableau
+  sous-jacent, longueur, capacité. Sa zéro-valeur, ce sont ces trois mots à zéro — donc
+  un pointeur nil, `len` 0, `cap` 0.
+
+Conséquence pratique, développée au niveau 2 : passer un `[3]int` à une fonction copie
+les trois entiers ; passer une `[]int` copie trois mots, quelle que soit la taille des
+données.
+
 ### Les types primitifs
 
 ```go
@@ -200,8 +279,34 @@ func main() {
 | `Debug Severity = iota` | Le type et l'expression se répètent implicitement sur les lignes suivantes. |
 | `default:` dans `severityName` | Traite les valeurs hors énumération. Sans lui, `Severity(42)` renverrait `""`, ce qui masquerait le bug. |
 | `float64(attempt)` | Conversion explicite. Diviser deux `int` donnerait une **division entière** : `0/3 = 0`, pas `0.0`. Piège fréquent. |
-| `%v` `%d` `%q` `%T` | Format par défaut · entier décimal · chaîne entre guillemets · **type** de la valeur. `%T` est l'outil de débogage n°1 du débutant. |
+| `%v` `%d` `%q` `%T` | Format par défaut · entier décimal · **littéral cité** · **type** de la valeur. `%T` est l'outil de débogage n°1 du débutant. Sur `%q`, voir l'encadré ci-dessous : il ne veut pas dire « entre guillemets » pour tout le monde. |
 | `%d` sur `level` | Affiche `2` : sans méthode `String()`, `fmt` ne sait rien du sens de la valeur. C'est précisément ce que le niveau 2 corrigera. |
+
+### `%q` et les *format errors* de `fmt`
+
+`%q` n'a pas le même sens selon le type, et n'en a aucun sur certains :
+
+| Opérande | `%q` donne | Lecture |
+|---|---|---|
+| `string` | `"texte"` | guillemets **doubles** |
+| entier / rune | `'A'`, `'\x00'` | guillemets **simples** : « ce nombre vu comme un caractère » |
+| slice, tableau, map, struct | le verbe s'applique **à chaque élément** | `[3]int` nul → `['\x00' '\x00' '\x00']` |
+| `[]byte` | `"texte"` | **exception** : traité comme une chaîne, pas élément par élément |
+| `float64`, `bool`, pointeur | `%!q(float64=0)` | aucune règle ne s'applique |
+
+Cette dernière ligne est le format standard des **erreurs de formatage** :
+`%!verbe(type=valeur)`. Le `%!` signale l'anomalie, puis vient le verbe fautif, puis le
+type et la valeur reçus.
+
+**`fmt` ne panique jamais sur un mauvais format** — il écrit le diagnostic *dans la
+sortie*. C'est délibéré : un appel de journalisation ne doit pas faire tomber le
+programme qu'il journalise. Mieux vaut une ligne de log étrange qu'un service à terre.
+
+Le corollaire : puisque `fmt` ne vous arrêtera pas à l'exécution, il faut un outil qui
+le fasse **avant**. C'est le rôle de `go vet`, qui signale `%q` sur un `float64` comme
+il signale `%d` sur une `string`. Un programme peut compiler, s'exécuter, ne pas
+paniquer — et être faux à chaque ligne. **`go vet` fait partie du cycle de
+développement, pas des finitions.**
 
 ## Erreurs fréquentes
 
@@ -220,6 +325,8 @@ func main() {
 5. **Dépassement silencieux** : `int8(200)` vaut `-56`, sans aucune alerte.
 6. **Croire que `var s string` vaut `nil`.** Une chaîne vaut `""`. Seuls pointeurs, slices, maps, channels, fonctions et interfaces valent `nil`.
 7. **Utiliser `uint` pour « un nombre positif ».** Source de boucles infinies. `int` avec une validation est préférable.
+8. **Écrire dans une map nil** → `panic: assignment to entry in nil map`. La lire est pourtant licite. Toute map doit passer par `make` (ou un littéral) avant la première écriture — y compris quand elle est un champ de struct.
+9. **Croire qu'une slice n'est pas nil parce que `%v` affiche `[]`.** L'affichage montre le contenu, pas l'identité de la valeur. Tester avec `== nil`.
 
 ## Bonnes pratiques Go
 
@@ -237,6 +344,12 @@ func main() {
 
 - Trois formes de déclaration ; `:=` dans les fonctions, `var` au niveau du package.
 - **La zéro-valeur existe toujours** : pas de variable non initialisée en Go.
+- **`nil` ne s'affiche pas `nil`** pour une slice (`[]`) ni pour une map (`map[]`) : `%v`
+  montre le contenu, pas l'identité. Tester avec `== nil`.
+- Une **slice nil** s'utilise telle quelle (`len`, `range`, `append`) ; une **map nil**
+  se lit mais **panique à l'écriture** — `make` avant d'écrire.
+- **`go vet` avant de rendre**, toujours : `fmt` accepte des formats absurdes et écrit
+  `%!verbe(type=valeur)` dans la sortie plutôt que de paniquer.
 - **Aucune conversion implicite**, même entre `int` et `int64`.
 - Une conversion qui déborde **tronque en silence** — c'est au développeur de vérifier.
 - Les **constantes non typées** ont une précision arbitraire et s'adaptent au contexte.
