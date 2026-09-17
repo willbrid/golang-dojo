@@ -22,18 +22,93 @@ permet **pas** de distinguer nil de vide. Seul `sl == nil` le dit.
 
 ## E2 — Conversions
 
-| Expression | Résultat |
-|---|---|
-| `int8(127) + 1` | **ne compile pas** : `127 + 1` est évalué en constante et déborde `int8`. Avec une variable, ça donnerait `-128` silencieusement. |
-| `int8(300)` | **ne compile pas** : `constant 300 overflows int8`. Go vérifie les constantes. Avec une variable `int` valant 300, `int8(x)` donne `44` sans alerte. |
-| `int(3.99)` | `3` — troncature **vers zéro**, pas d'arrondi. `int(-3.99)` donne `-3`. |
-| `float64(7) / 2` | `3.5` |
-| `7 / 2` | `3` — division entière |
-| `7 % -2` | `1` — en Go le reste a le signe du **dividende** (comme en C, contrairement à Python qui donne `-1`) |
-| `uint8(255) + 1` | ne compile pas en constante ; sur variable : `0` (repli silencieux) |
+### Première surprise : aucune des sept lignes ne compile
 
-Leçon centrale : **Go vérifie les constantes à la compilation, jamais les variables à
-l'exécution.** Le dépassement sur variable est silencieux.
+Recopiées telles quelles dans un `main`, les sept expressions produisent sept erreurs. Mais
+elles ne disent pas toutes la même chose, et c'est là qu'est l'exercice — il y a **deux
+couches d'erreurs empilées**.
+
+```
+./main.go:4:2: int8(127) + 1 (constant 128 of type int8) overflows int8
+./main.go:5:7: constant 300 overflows int8
+./main.go:6:6: cannot convert 3.99 (untyped float constant) to type int
+./main.go:7:2: float64(7) / 2 (constant 3.5 of type float64) is not used
+./main.go:8:2: 7 / 2 (untyped int constant 3) is not used
+./main.go:9:2: 7 % -2 (untyped int constant 1) is not used
+./main.go:10:2: uint8(255) + 1 (constant 256 of type uint8) overflows uint8
+```
+
+**Couche 1 — `is not used`** (lignes 4 à 6 de l'énoncé). Ces trois expressions sont
+parfaitement légales. Go refuse simplement une expression **utilisée comme instruction** :
+en Go, seuls un appel de fonction, une affectation, un `<-` et quelques autres formes sont
+des instructions valides. `3 + 4` tout seul sur une ligne n'est pas un programme, c'est un
+oubli. Ces erreurs ne parlent donc pas de conversion du tout — le message donne d'ailleurs
+la valeur calculée (`3.5`, `3`, `1`), preuve que le compilateur a fait le calcul sans
+broncher. Les mettre dans un `fmt.Println` suffit à les faire compiler.
+
+**Couche 2 — `overflows` / `cannot convert`** (lignes 1, 2, 3 et 7). Celles-là sont de
+vraies erreurs de typage, et elles ont toutes la même cause : **ce sont des constantes**.
+
+### Le point central : constante ou variable ?
+
+Une constante est évaluée par le compilateur, qui vérifie qu'elle tient dans son type et
+refuse sinon. Une variable n'est pas connue à la compilation : la même opération passe, et
+déborde **en silence** à l'exécution. Toute la question de l'exercice — « le compilateur
+refuse-t-il, ou accepte-t-il en produisant un résultat surprenant ? » — est là : c'est
+*ou bien l'un, ou bien l'autre*, selon la forme, jamais les deux.
+
+| Expression | Écrite telle quelle (constante) | Avec une variable |
+|---|---|---|
+| `int8(127) + 1` | **refusé** : `constant 128 of type int8 overflows int8` | `var a int8 = 127` puis `a + 1` → **-128** |
+| `int8(300)` | **refusé** : `constant 300 overflows int8` | `var n = 300` puis `int8(n)` → **44** |
+| `int(3.99)` | **refusé** : `cannot convert 3.99 (untyped float constant) to type int` | `var f = 3.99` puis `int(f)` → **3** |
+| `float64(7) / 2` | légal, vaut **3.5** (seule l'instruction nue est refusée) | idem |
+| `7 / 2` | légal, vaut **3** | idem |
+| `7 % -2` | légal, vaut **1** | idem |
+| `uint8(255) + 1` | **refusé** : `constant 256 of type uint8 overflows uint8` | `var u uint8 = 255` puis `u + 1` → **0** |
+
+### Les quatre pièges, un par un
+
+**`int8(127) + 1` et `uint8(255) + 1` — ce n'est pas la conversion qui échoue.**
+`127` est exactement `math.MaxInt8`, et `255` exactement `math.MaxUint8` : les deux tiennent
+parfaitement dans leur type, la conversion est irréprochable. C'est l'**addition qui suit**
+qui déborde. Le message le dit mot pour mot : `constant 128 of type int8` — la valeur
+fautive est 128, pas 127. Lire la valeur citée par le compilateur, pas celle qu'on a écrite.
+
+**`int8(300)` — là, c'est bien la conversion.** `300` ne tient pas dans `int8` (qui va de
+-128 à 127). Noter que le message diffère : `constant 300 overflows int8`, sans mention de
+type sur la constante, parce que `300` est encore non typée au moment du refus.
+
+**`int(3.99)` — ce n'est pas « parce que c'est une constante non typée ».** Les constantes
+non typées se convertissent très bien : `int(4.0)` compile et vaut `4`. La règle est que la
+conversion d'une constante doit être **exacte** : `3.99` n'a aucune représentation entière,
+donc Go refuse plutôt que de choisir à votre place. Sur une variable il tronque **vers
+zéro** — `int(3.99)` donne `3`, et `int(-3.99)` donne `-3`, pas `-4`.
+
+**`7 % -2` — le signe suit le dividende.** Le résultat est `1`, pas `-1`. En Go comme en C,
+`a % b` a le signe de `a` ; Python, lui, donne `-1`. Piège classique quand on implémente un
+modulo cyclique : `(i - 1) % n` sur un index à 0 donne un indice **négatif** en Go.
+
+### La vérification à lancer
+
+```go
+var a int8 = 127
+var n = 300
+var f, g = 3.99, -3.99
+var u uint8 = 255
+
+fmt.Println(a+1)                 // -128
+fmt.Println(int8(n))             // 44
+fmt.Println(int(f), int(g))      // 3 -3
+fmt.Println(u+1)                 // 0
+fmt.Println(7%-2, -7%2)          // 1 -1
+fmt.Println(float64(7)/2, 7/2)   // 3.5 3
+```
+
+Leçon centrale : **Go vérifie les constantes à la compilation, et uniquement elles.** Dès
+qu'une valeur transite par une variable, plus aucun filet — le débordement est silencieux
+et c'est au développeur de le prévoir. C'est exactement ce que le défi `SafeAdd` / `SafeMul`
+de cette leçon demande de construire à la main.
 
 ## E3 — `iota`
 
