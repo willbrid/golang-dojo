@@ -160,8 +160,40 @@ Même `int` et `int64` sont des types **différents** qui ne se mélangent pas. 
 verbeux, et c'est voulu : toute perte de précision ou tout dépassement devient visible
 dans le code. Une conversion explicite est un endroit où l'auteur a réfléchi.
 
-Attention : une conversion qui déborde **ne panique pas**, elle tronque silencieusement.
-`int8(300)` vaut `44`. C'est l'un des rares endroits où Go laisse passer une erreur.
+Attention : une conversion qui déborde **ne panique jamais**. Mais le moment où elle est
+refusée dépend de ce qu'on convertit — et c'est la distinction la plus mal comprise du
+langage :
+
+```go
+int8(300)             // ERREUR de compilation : constant 300 overflows int8
+var n = 300
+int8(n)               // compile, et vaut 44 — repli silencieux à l'exécution
+```
+
+Une **constante** est connue du compilateur : il vérifie qu'elle tient dans le type
+d'arrivée, et refuse sinon. Une **variable** ne l'est pas : la conversion tronque les bits
+de poids fort en silence. Même règle pour l'arithmétique :
+
+```go
+int8(127) + 1         // ERREUR : constant 128 of type int8 overflows int8
+var a int8 = 127
+a + 1                 // vaut -128, sans un mot
+```
+
+Et pour la troncature des flottants :
+
+```go
+int(3.99)             // ERREUR : cannot convert 3.99 (untyped float constant) to type int
+var f = 3.99
+int(f)                // vaut 3 — troncature vers zéro, pas d'arrondi
+```
+
+La conversion d'une constante doit être **exacte** : `3.99` n'a pas de représentation
+entière, donc Go refuse plutôt que de deviner. Sur une variable, il tronque.
+
+À retenir : **le compilateur vous protège sur les constantes, et uniquement sur elles.**
+C'est l'un des rares endroits où Go laisse passer une erreur — dès que la valeur transite
+par une variable, la vérification vous incombe.
 
 ### Constantes, et la subtilité des constantes non typées
 
@@ -351,7 +383,8 @@ développement, pas des finitions.**
 - **`go vet` avant de rendre**, toujours : `fmt` accepte des formats absurdes et écrit
   `%!verbe(type=valeur)` dans la sortie plutôt que de paniquer.
 - **Aucune conversion implicite**, même entre `int` et `int64`.
-- Une conversion qui déborde **tronque en silence** — c'est au développeur de vérifier.
+- Une conversion qui déborde est **refusée à la compilation sur une constante**, mais
+  **tronque en silence sur une variable** — c'est au développeur de vérifier.
 - Les **constantes non typées** ont une précision arbitraire et s'adaptent au contexte.
 - `iota` fabrique des énumérations, mais **ne valide rien**.
 - Jamais de flottant pour de l'argent.
