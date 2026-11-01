@@ -84,7 +84,7 @@ Objectif : concevoir ses propres types et organiser le code.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | `strings` en profondeur | l'API complète, `Builder`, `Replacer`, performances | 🔜 |
+| 1 | [`strings` en profondeur](niveau-04-bibliotheque-standard/lecon-01-strings/) | l'API complète, `Builder`, `Replacer`, performances | ✅ |
 | 2 | Expressions régulières | `regexp`, RE2 et l'absence de rétro-références, `MustCompile`, groupes nommés, coût | 🔜 |
 | 3 | Math, tri et comparaison | `math`, `math/rand/v2`, `sort` vs `slices.SortFunc`, tri stable, `cmp` | 🔜 |
 | 4 | Dates, heures et durées | `time.Time`, `Duration`, fuseaux, formatage par référence, monotonic clock, pièges | 🔜 |
