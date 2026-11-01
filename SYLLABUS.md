@@ -106,7 +106,7 @@ Objectif : concevoir ses propres types et organiser le code.
 | 3 | [Tester les dépendances](niveau-05-tests-qualite/lecon-03-dependances/) | interfaces, fakes, mocks — et pourquoi Go préfère les fakes | ✅ |
 | 4 | [Couverture et golden files](niveau-05-tests-qualite/lecon-04-couverture-golden/) | `-cover`, ce que la couverture ne dit pas, fichiers de référence | ✅ |
 | 5 | [Exemples exécutables](niveau-05-tests-qualite/lecon-05-exemples/) | `func Example…`, documentation testée, `go doc -ex` (1.27) | ✅ |
-| 6 | Benchmarks | `testing.B`, `b.Loop` (1.24+), mesures fiables, `benchstat` | 🔜 |
+| 6 | [Benchmarks](niveau-05-tests-qualite/lecon-06-benchmarks/) | `testing.B`, `b.Loop` (1.24+), mesures fiables, `benchstat` | ✅ |
 | 7 | Fuzzing | `func Fuzz…`, corpus, bugs trouvés par la machine | 🔜 |
 | 8 | Outillage qualité | `go vet`, `staticcheck`, `golangci-lint`, `govulncheck`, `go fix` (1.27) | 🔜 |
 
