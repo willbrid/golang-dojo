@@ -124,7 +124,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 4 | [`select`](niveau-06-concurrence/lecon-04-select/) | multiplexage, `default`, `time.After`, boucles de service | ✅ |
 | 5 | [`sync.WaitGroup`](niveau-06-concurrence/lecon-05-waitgroup/) | attendre des goroutines, `WaitGroup.Go` (1.25+), pièges classiques | ✅ |
 | 6 | [`Mutex` et `RWMutex`](niveau-06-concurrence/lecon-06-mutex/) | protéger un état, granularité, `sync.Map` | ✅ |
-| 7 | `atomic`, `Once`, `Pool` | opérations atomiques, `OnceValue`, réutilisation | 🔜 |
+| 7 | [`atomic`, `Once`, `Pool`](niveau-06-concurrence/lecon-07-atomic-once-pool/) | opérations atomiques, `OnceValue`, réutilisation | ✅ |
 | 8 | `context` | annulation, `WithTimeout`, propagation, valeurs avec parcimonie | 🔜 |
 | 9 | Patrons | worker pool, pipeline, fan-in/fan-out, `errgroup` | 🔜 |
 | 10 | Pathologies | data races, deadlocks, livelocks, famine, fuites de goroutines, `-race`, profil `goroutineleak` (1.27) | 🔜 |
