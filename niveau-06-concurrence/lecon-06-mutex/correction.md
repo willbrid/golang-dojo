@@ -55,7 +55,9 @@ rendre une copie, construite sous verrou.
 
 ## E4 — Vérifier puis agir
 
-Résultat typique : **plus de 50** réservations réussissent (52, 57…), et `-race` ne dit **rien** :
+Résultat mesuré sous `-race` : **66 à 69** réservations réussissent et il reste `-16` à `-19` places
+— avec un `time.Sleep(time.Microsecond)` entre les deux appels pour élargir la fenêtre ; sans lui,
+on obtient parfois exactement 50, ce qui rend le bug d'autant plus sournois. Et `-race` ne dit **rien** :
 chaque accès est protégé, il n'y a aucune data race. Le bug est **logique** : entre `Available()` et
 `Take()`, d'autres goroutines prennent des places. Correction : une seule méthode atomique.
 
