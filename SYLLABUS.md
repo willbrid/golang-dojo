@@ -139,7 +139,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | `net/http` — le serveur | `Handler`, `HandlerFunc`, `ServeMux` et son routage à motifs (1.22+) | 🔜 |
+| 1 | [`net/http` — le serveur](niveau-07-reseau-http/lecon-01-serveur/) | `Handler`, `HandlerFunc`, `ServeMux` et son routage à motifs (1.22+) | ✅ |
 | 2 | Requêtes et réponses | statuts, en-têtes, corps, streaming, `http.Error` | 🔜 |
 | 3 | Middleware | composition, journalisation, `recover`, identifiant de requête | 🔜 |
 | 4 | Conception d'API REST | ressources, verbes, statuts, pagination, versionnement | 🔜 |
