@@ -88,7 +88,7 @@ Objectif : concevoir ses propres types et organiser le code.
 | 2 | [Expressions régulières](niveau-04-bibliotheque-standard/lecon-02-regexp/) | `regexp`, RE2 et l'absence de rétro-références, `MustCompile`, groupes nommés, coût | ✅ |
 | 3 | [Math, tri et comparaison](niveau-04-bibliotheque-standard/lecon-03-math-tri/) | `math`, `math/rand/v2`, `sort` vs `slices.SortFunc`, tri stable, `cmp` | ✅ |
 | 4 | [Dates, heures et durées](niveau-04-bibliotheque-standard/lecon-04-temps/) | `time.Time`, `Duration`, fuseaux, formatage par référence, monotonic clock, pièges | ✅ |
-| 5 | Readers et Writers | `io.Reader`/`Writer`, `bufio`, `io.Copy`, `TeeReader`, `MultiWriter`, composition | 🔜 |
+| 5 | [Readers et Writers](niveau-04-bibliotheque-standard/lecon-05-readers-writers/) | `io.Reader`/`Writer`, `bufio`, `io.Copy`, `TeeReader`, `MultiWriter`, composition | ✅ |
 | 6 | JSON | `encoding/json`, **`encoding/json/v2` et `jsontext` (1.27)**, balises, types personnalisés | 🔜 |
 | 7 | Fichiers et systèmes de fichiers | `os`, `path/filepath`, `io/fs`, `os.Root` , fichiers temporaires, `//go:embed` | 🔜 |
 | 8 | Gabarits | `text/template`, `html/template` et l'échappement contextuel, injection | 🔜 |
