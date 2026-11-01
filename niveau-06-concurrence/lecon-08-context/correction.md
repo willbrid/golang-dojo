@@ -172,8 +172,10 @@ type timeoutCtx struct {
 
 func MyWithTimeout(parent context.Context, d time.Duration) (context.Context, context.CancelFunc) {
 	c := &timeoutCtx{parent: parent, done: make(chan struct{}), dl: time.Now().Add(d)}
+	c.mu.Lock() // les rappels peuvent se déclencher AVANT la fin de ces deux affectations
 	c.timer = time.AfterFunc(d, func() { c.finish(context.DeadlineExceeded) })
 	c.stop = context.AfterFunc(parent, func() { c.finish(parent.Err()) })
+	c.mu.Unlock()
 	return c, func() { c.finish(context.Canceled) }
 }
 
@@ -181,10 +183,11 @@ func (c *timeoutCtx) finish(err error) {
 	c.once.Do(func() {
 		c.mu.Lock()
 		c.err = err
+		timer, stop := c.timer, c.stop
 		c.mu.Unlock()
 		close(c.done)
-		c.timer.Stop()
-		c.stop()
+		timer.Stop()
+		stop()
 	})
 }
 
@@ -198,6 +201,13 @@ func (c *timeoutCtx) Err() error {
 }
 ```
 
+- **Le piège trouvé par `-race`.** La première version de ce corrigé affectait `c.timer` et `c.stop`
+  sans verrou. Si le parent est **déjà annulé**, `context.AfterFunc` lance le rappel immédiatement,
+  dans une autre goroutine, qui lit `c.stop`… pendant que `MyWithTimeout` est encore en train de
+  l'affecter. Le test passait sans `-race` ; avec `-race`, il échouait :
+  `WARNING: DATA RACE … Read at … by goroutine 12: s.(*timeoutCtx).finish.1()`. Un rappel enregistré
+  peut s'exécuter **avant** que la fonction d'enregistrement ait rendu la main : tout ce qu'il lit doit
+  être protégé. Corrigé ci-dessus ; 20 exécutions consécutives sous `-race` passent.
 - `sync.Once` rend `finish` idempotente : le premier événement (délai, `cancel`, parent) gagne, les
   autres ne font rien — pas de « close of closed channel ».
 - `context.AfterFunc` évite une goroutine qui attendrait `parent.Done()` pour toujours.
