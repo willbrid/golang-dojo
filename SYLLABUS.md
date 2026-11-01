@@ -104,7 +104,7 @@ Objectif : concevoir ses propres types et organiser le code.
 | 1 | [Le paquet `testing`](niveau-05-tests-qualite/lecon-01-testing/) | premier test, `t.Run`, `t.Helper`, `t.Cleanup`, `t.TempDir`, `Error` vs `Fatal` | ✅ |
 | 2 | [Table-driven tests](niveau-05-tests-qualite/lecon-02-table-driven/) | le patron canonique Go, sous-tests, cas limites | ✅ |
 | 3 | [Tester les dépendances](niveau-05-tests-qualite/lecon-03-dependances/) | interfaces, fakes, mocks — et pourquoi Go préfère les fakes | ✅ |
-| 4 | Couverture et golden files | `-cover`, ce que la couverture ne dit pas, fichiers de référence | 🔜 |
+| 4 | [Couverture et golden files](niveau-05-tests-qualite/lecon-04-couverture-golden/) | `-cover`, ce que la couverture ne dit pas, fichiers de référence | ✅ |
 | 5 | Exemples exécutables | `func Example…`, documentation testée, `go doc -ex` (1.27) | 🔜 |
 | 6 | Benchmarks | `testing.B`, `b.Loop` (1.24+), mesures fiables, `benchstat` | 🔜 |
 | 7 | Fuzzing | `func Fuzz…`, corpus, bugs trouvés par la machine | 🔜 |
