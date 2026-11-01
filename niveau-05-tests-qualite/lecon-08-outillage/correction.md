@@ -22,8 +22,8 @@ type T struct {
 
 func byValue(t T) {}                       // copylocks : passe un Mutex par valeur
 
-func f() int {
-	return 1
+func f() {
+	return
 	fmt.Println("jamais")                  // unreachable
 }
 
@@ -34,6 +34,21 @@ func g() {
 	byValue(t)                              // copylocks
 }
 ```
+
+Sortie mesurée :
+
+```
+a.go:13:16: byValue passes lock by value: v.T contains sync.Mutex
+a.go:24:10: call of byValue copies lock value: v.T contains sync.Mutex
+a.go:21:14: fmt.Printf format %s has arg 42 of wrong type int
+a.go:10:2: struct field tag `json:"n" xml:"n,attr` not compatible with reflect.StructTag.Get: bad syntax for struct tag value
+a.go:17:2: unreachable code
+a.go:22:2: result of fmt.Sprintf call not used
+```
+
+(Avec `func f() int { return 1; fmt.Println(…) }`, ce n'est même pas `vet` qui répond mais le
+compilateur : `missing return` — une fonction à résultat doit se terminer par une instruction
+terminale.)
 
 Le plus difficile à voir en relecture est presque toujours **`copylocks`** : passer une struct par
 valeur est banal, et rien ne signale qu'elle contient un `sync.Mutex` (niveau 6) — copier un
