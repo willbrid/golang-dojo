@@ -118,7 +118,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | Le modèle de concurrence | goroutines, ordonnanceur M:N, `GOMAXPROCS`, concurrence ≠ parallélisme | 🔜 |
+| 1 | [Le modèle de concurrence](niveau-06-concurrence/lecon-01-modele/) | goroutines, ordonnanceur M:N, `GOMAXPROCS`, concurrence ≠ parallélisme | ✅ |
 | 2 | Channels non bufferisés | le rendez-vous, direction des channels | 🔜 |
 | 3 | Channels bufferisés | capacité, fermeture, `range`, qui ferme | 🔜 |
 | 4 | `select` | multiplexage, `default`, `time.After`, boucles de service | 🔜 |
