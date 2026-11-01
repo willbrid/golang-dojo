@@ -25,7 +25,8 @@ mesures, et un outil statistique pour dire si l'écart dépasse le bruit.
 
 ## E3 — `benchstat`
 
-Forme de la sortie (les valeurs dépendent de ta machine) :
+Forme de la sortie — **valeurs illustratives**, construites à partir des mesures brutes du cours
+(`benchstat` n'a pas été exécuté lors de la rédaction ; tes chiffres et tes `±` feront foi) :
 
 ```
                      │  avant.txt  │              apres.txt               │
@@ -66,8 +67,9 @@ func BenchmarkSort(b *testing.B) {
 
 La copie est mesurée avec le tri, mais elle pèse 0,3 % du total : on l'accepte, et on le **sait**
 grâce à `BenchmarkCopyOnly`. `b.StopTimer()`/`b.StartTimer()` autour de la copie semble plus
-propre, mais ces appels ont eux-mêmes un coût et perturbent la mesure quand le corps est court ;
-la documentation de `testing` le déconseille dans les boucles serrées.
+propre, mais ces appels ont eux-mêmes un coût (lecture d'horloge, statistiques mémoire) : quand le
+corps mesuré est court, ce coût fausse la mesure. Mesurer la copie à part est plus simple et plus
+honnête.
 
 ## E5 — Allocations
 
