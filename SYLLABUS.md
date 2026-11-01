@@ -101,7 +101,7 @@ Objectif : concevoir ses propres types et organiser le code.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | Le paquet `testing` | premier test, `t.Run`, `t.Helper`, `t.Cleanup`, `t.TempDir`, `Error` vs `Fatal` | 🔜 |
+| 1 | [Le paquet `testing`](niveau-05-tests-qualite/lecon-01-testing/) | premier test, `t.Run`, `t.Helper`, `t.Cleanup`, `t.TempDir`, `Error` vs `Fatal` | ✅ |
 | 2 | Table-driven tests | le patron canonique Go, sous-tests, cas limites | 🔜 |
 | 3 | Tester les dépendances | interfaces, fakes, mocks — et pourquoi Go préfère les fakes | 🔜 |
 | 4 | Couverture et golden files | `-cover`, ce que la couverture ne dit pas, fichiers de référence | 🔜 |
