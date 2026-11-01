@@ -76,7 +76,7 @@ Objectif : concevoir ses propres types et organiser le code.
 | 3 | [Méthodes génériques](niveau-03-go-moderne-generiques/lecon-03-methodes-generiques/) | nouveauté **Go 1.27**, inférence étendue, limites | ✅ |
 | 4 | [`slices`, `maps`, `cmp`](niveau-03-go-moderne-generiques/lecon-04-slices-maps-cmp/) | l'API générique moderne, ce qu'elle remplace | ✅ |
 | 5 | [Itérateurs et `range` sur fonction](niveau-03-go-moderne-generiques/lecon-05-iterateurs/) | `iter.Seq`, `iter.Seq2`, `slices.Collect`, `maps.Keys` (Go 1.23+) | ✅ |
-| 6 | Code idiomatique | conception d'API, `Effective Go`, `Code Review Comments`, revue | 🔜 |
+| 6 | [Code idiomatique](niveau-03-go-moderne-generiques/lecon-06-code-idiomatique/) | conception d'API, `Effective Go`, `Code Review Comments`, revue | ✅ |
 
 ---
 
