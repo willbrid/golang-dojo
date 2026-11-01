@@ -74,7 +74,7 @@ Objectif : concevoir ses propres types et organiser le code.
 | 1 | [Paramètres de type](niveau-03-go-moderne-generiques/lecon-01-parametres-de-type/) | syntaxe, inférence, quand les génériques aident et quand ils nuisent | ✅ |
 | 2 | [Contraintes de type](niveau-03-go-moderne-generiques/lecon-02-contraintes/) | `any`, `comparable`, `cmp.Ordered`, unions de types, contraintes personnalisées | ✅ |
 | 3 | [Méthodes génériques](niveau-03-go-moderne-generiques/lecon-03-methodes-generiques/) | nouveauté **Go 1.27**, inférence étendue, limites | ✅ |
-| 4 | `slices`, `maps`, `cmp` | l'API générique moderne, ce qu'elle remplace | 🔜 |
+| 4 | [`slices`, `maps`, `cmp`](niveau-03-go-moderne-generiques/lecon-04-slices-maps-cmp/) | l'API générique moderne, ce qu'elle remplace | ✅ |
 | 5 | Itérateurs et `range` sur fonction | `iter.Seq`, `iter.Seq2`, `slices.Collect`, `maps.Keys` (Go 1.23+) | 🔜 |
 | 6 | Code idiomatique | conception d'API, `Effective Go`, `Code Review Comments`, revue | 🔜 |
 
