@@ -128,7 +128,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 8 | [`context`](niveau-06-concurrence/lecon-08-context/) | annulation, `WithTimeout`, propagation, valeurs avec parcimonie | ✅ |
 | 9 | [Patrons](niveau-06-concurrence/lecon-09-patrons/) | worker pool, pipeline, fan-in/fan-out, `errgroup` | ✅ |
 | 10 | [Pathologies](niveau-06-concurrence/lecon-10-pathologies/) | data races, deadlocks, livelocks, famine, fuites de goroutines, `-race`, profil `goroutineleak` (1.27) | ✅ |
-| 11 | Backpressure | dimensionner les files, rejeter proprement, charge et latence | 🔜 |
+| 11 | [Backpressure](niveau-06-concurrence/lecon-11-backpressure/) | dimensionner les files, rejeter proprement, charge et latence | ✅ |
 | 12 | Panique et goroutines | pourquoi `recover` ne protège que sa goroutine, supervision | 🔜 |
 
 ➡️ **[Projet 5 — Serveur concurrent](projets/projet-05-serveur-concurrent/)**
