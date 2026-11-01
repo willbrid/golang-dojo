@@ -126,7 +126,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 6 | [`Mutex` et `RWMutex`](niveau-06-concurrence/lecon-06-mutex/) | protéger un état, granularité, `sync.Map` | ✅ |
 | 7 | [`atomic`, `Once`, `Pool`](niveau-06-concurrence/lecon-07-atomic-once-pool/) | opérations atomiques, `OnceValue`, réutilisation | ✅ |
 | 8 | [`context`](niveau-06-concurrence/lecon-08-context/) | annulation, `WithTimeout`, propagation, valeurs avec parcimonie | ✅ |
-| 9 | Patrons | worker pool, pipeline, fan-in/fan-out, `errgroup` | 🔜 |
+| 9 | [Patrons](niveau-06-concurrence/lecon-09-patrons/) | worker pool, pipeline, fan-in/fan-out, `errgroup` | ✅ |
 | 10 | Pathologies | data races, deadlocks, livelocks, famine, fuites de goroutines, `-race`, profil `goroutineleak` (1.27) | 🔜 |
 | 11 | Backpressure | dimensionner les files, rejeter proprement, charge et latence | 🔜 |
 | 12 | Panique et goroutines | pourquoi `recover` ne protège que sa goroutine, supervision | 🔜 |
