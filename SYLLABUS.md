@@ -123,7 +123,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 3 | [Channels bufferisés](niveau-06-concurrence/lecon-03-channels-bufferises/) | capacité, fermeture, `range`, qui ferme | ✅ |
 | 4 | [`select`](niveau-06-concurrence/lecon-04-select/) | multiplexage, `default`, `time.After`, boucles de service | ✅ |
 | 5 | [`sync.WaitGroup`](niveau-06-concurrence/lecon-05-waitgroup/) | attendre des goroutines, `WaitGroup.Go` (1.25+), pièges classiques | ✅ |
-| 6 | `Mutex` et `RWMutex` | protéger un état, granularité, `sync.Map` | 🔜 |
+| 6 | [`Mutex` et `RWMutex`](niveau-06-concurrence/lecon-06-mutex/) | protéger un état, granularité, `sync.Map` | ✅ |
 | 7 | `atomic`, `Once`, `Pool` | opérations atomiques, `OnceValue`, réutilisation | 🔜 |
 | 8 | `context` | annulation, `WithTimeout`, propagation, valeurs avec parcimonie | 🔜 |
 | 9 | Patrons | worker pool, pipeline, fan-in/fan-out, `errgroup` | 🔜 |
