@@ -90,7 +90,7 @@ Objectif : concevoir ses propres types et organiser le code.
 | 4 | [Dates, heures et durées](niveau-04-bibliotheque-standard/lecon-04-temps/) | `time.Time`, `Duration`, fuseaux, formatage par référence, monotonic clock, pièges | ✅ |
 | 5 | [Readers et Writers](niveau-04-bibliotheque-standard/lecon-05-readers-writers/) | `io.Reader`/`Writer`, `bufio`, `io.Copy`, `TeeReader`, `MultiWriter`, composition | ✅ |
 | 6 | [JSON](niveau-04-bibliotheque-standard/lecon-06-json/) | `encoding/json`, **`encoding/json/v2` et `jsontext` (1.27)**, balises, types personnalisés | ✅ |
-| 7 | Fichiers et systèmes de fichiers | `os`, `path/filepath`, `io/fs`, `os.Root` , fichiers temporaires, `//go:embed` | 🔜 |
+| 7 | [Fichiers et systèmes de fichiers](niveau-04-bibliotheque-standard/lecon-07-fichiers/) | `os`, `path/filepath`, `io/fs`, `os.Root` , fichiers temporaires, `//go:embed` | ✅ |
 | 8 | Gabarits | `text/template`, `html/template` et l'échappement contextuel, injection | 🔜 |
 
 ➡️ **[Projet 2 — Gestionnaire de tâches CLI](projets/projet-02-gestionnaire-taches/)**
