@@ -145,7 +145,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 4 | [Conception d'API REST](niveau-07-reseau-http/lecon-04-api-rest/) | ressources, verbes, statuts, pagination, versionnement | ✅ |
 | 5 | [Erreurs HTTP](niveau-07-reseau-http/lecon-05-erreurs-http/) | modèle d'erreur, mapping domaine → statut, ne rien fuiter | ✅ |
 | 6 | [Client HTTP](niveau-07-reseau-http/lecon-06-client/) | `http.Client`, `Transport`, pools, timeouts, retries, drainage (1.27) | ✅ |
-| 7 | `context` de bout en bout | annulation client → serveur → base, arrêt gracieux | 🔜 |
+| 7 | [`context` de bout en bout](niveau-07-reseau-http/lecon-07-context/) | annulation client → serveur → base, arrêt gracieux | ✅ |
 | 8 | Authentification | sessions, JWT, clés d'API, OAuth2, hachage de mots de passe | 🔜 |
 | 9 | Serveur en production | timeouts, limites de taille, `MaxHeaderValueCount` (1.27), reverse proxy | 🔜 |
 | 10 | TCP et UDP | `net.Listen`, protocoles binaires, framing, DNS | 🔜 |
