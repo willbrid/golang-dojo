@@ -147,7 +147,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 6 | [Client HTTP](niveau-07-reseau-http/lecon-06-client/) | `http.Client`, `Transport`, pools, timeouts, retries, drainage (1.27) | ✅ |
 | 7 | [`context` de bout en bout](niveau-07-reseau-http/lecon-07-context/) | annulation client → serveur → base, arrêt gracieux | ✅ |
 | 8 | [Authentification](niveau-07-reseau-http/lecon-08-authentification/) | sessions, JWT, clés d'API, OAuth2, hachage de mots de passe | ✅ |
-| 9 | Serveur en production | timeouts, limites de taille, `MaxHeaderValueCount` (1.27), reverse proxy | 🔜 |
+| 9 | [Serveur en production](niveau-07-reseau-http/lecon-09-production/) | timeouts, limites de taille, `MaxHeaderValueCount` (1.27), reverse proxy | ✅ |
 | 10 | TCP et UDP | `net.Listen`, protocoles binaires, framing, DNS | 🔜 |
 | 11 | TLS et WebSockets | certificats, mTLS, post-quantique (1.27), mise à niveau de connexion | 🔜 |
 | 12 | RPC et gRPC | protobuf, streaming, intercepteurs, quand gRPC plutôt que REST | 🔜 |
