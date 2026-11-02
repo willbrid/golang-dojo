@@ -149,7 +149,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 8 | [Authentification](niveau-07-reseau-http/lecon-08-authentification/) | sessions, JWT, clés d'API, OAuth2, hachage de mots de passe | ✅ |
 | 9 | [Serveur en production](niveau-07-reseau-http/lecon-09-production/) | timeouts, limites de taille, `MaxHeaderValueCount` (1.27), reverse proxy | ✅ |
 | 10 | [TCP et UDP](niveau-07-reseau-http/lecon-10-tcp-udp/) | `net.Listen`, protocoles binaires, framing, DNS | ✅ |
-| 11 | TLS et WebSockets | certificats, mTLS, post-quantique (1.27), mise à niveau de connexion | 🔜 |
+| 11 | [TLS et WebSockets](niveau-07-reseau-http/lecon-11-tls-websockets/) | certificats, mTLS, post-quantique (1.27), mise à niveau de connexion | ✅ |
 | 12 | RPC et gRPC | protobuf, streaming, intercepteurs, quand gRPC plutôt que REST | 🔜 |
 
 ➡️ **[Projet 3 — API REST avec tests](projets/projet-03-api-rest/)**
