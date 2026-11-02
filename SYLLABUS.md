@@ -143,7 +143,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 2 | [Requêtes et réponses](niveau-07-reseau-http/lecon-02-requetes-reponses/) | statuts, en-têtes, corps, streaming, `http.Error` | ✅ |
 | 3 | [Middleware](niveau-07-reseau-http/lecon-03-middleware/) | composition, journalisation, `recover`, identifiant de requête | ✅ |
 | 4 | [Conception d'API REST](niveau-07-reseau-http/lecon-04-api-rest/) | ressources, verbes, statuts, pagination, versionnement | ✅ |
-| 5 | Erreurs HTTP | modèle d'erreur, mapping domaine → statut, ne rien fuiter | 🔜 |
+| 5 | [Erreurs HTTP](niveau-07-reseau-http/lecon-05-erreurs-http/) | modèle d'erreur, mapping domaine → statut, ne rien fuiter | ✅ |
 | 6 | Client HTTP | `http.Client`, `Transport`, pools, timeouts, retries, drainage (1.27) | 🔜 |
 | 7 | `context` de bout en bout | annulation client → serveur → base, arrêt gracieux | 🔜 |
 | 8 | Authentification | sessions, JWT, clés d'API, OAuth2, hachage de mots de passe | 🔜 |
