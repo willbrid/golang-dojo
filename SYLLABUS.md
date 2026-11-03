@@ -228,7 +228,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | # | Leçon | Contenu | État |
 |---|---|---|---|
 | 1 | [Git et projets Go](niveau-12-outils-production/lecon-01-git-projets/) | branches, tags de version, conventions de commit | ✅ |
-| 2 | Build de production | cross-compilation, `-ldflags`, builds reproductibles | 🔜 |
+| 2 | [Build de production](niveau-12-outils-production/lecon-02-build/) | cross-compilation, `-ldflags`, builds reproductibles | ✅ |
 | 3 | Docker | multi-stage, distroless, binaire statique | 🔜 |
 | 4 | CI/CD | GitHub Actions : test, lint, race, build, release | 🔜 |
 | 5 | Configuration | variables d'environnement, précédence, validation au démarrage | 🔜 |
