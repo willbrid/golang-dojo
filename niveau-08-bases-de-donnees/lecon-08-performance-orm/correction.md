@@ -25,7 +25,7 @@ l'index `(author, created_at)`, un auteur inexistant coûte trois pages.
 | Requête | `(author, created_at)` | `(created_at, author)` |
 |---|---|---|
 | un auteur, 20 plus récents | ≈ 0,05 – 0,16 ms, quelques dizaines de pages | ≈ 10 ms, ≈ 1 000 pages (parcours par date, filtre sur `author` **dans** l'index) |
-| un intervalle de dates seul | **parcours séquentiel** de la table (≈ 30 ms) | parcours d'index, ≈ 0,05 ms |
+| un intervalle de dates seul (7 840 lignes) | **parcours séquentiel** de la table (≈ 28 ms, 9 154 pages) | parcours de l'index seul, ≈ 1,2 ms, 43 pages |
 
 Règle : un index composite se lit **de gauche à droite**. Il sert un filtre sur une **préfixe** de ses
 colonnes ; les colonnes d'égalité d'abord, la colonne de tri ou d'intervalle ensuite. Un index ne sert
