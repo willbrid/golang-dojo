@@ -219,7 +219,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | 5 | [pprof — mémoire, block, mutex](niveau-11-performance/lecon-05-pprof-memoire/) | allocations, contention, profil `goroutineleak` (1.27) | ✅ |
 | 6 | [Slices, maps et cache](niveau-11-performance/lecon-06-slices-maps-cache/) | préallocation, localité, coût réel | ✅ |
 | 7 | [Latence et débit](niveau-11-performance/lecon-07-latence-debit/) | percentiles, loi de Little, files d'attente | ✅ |
-| 8 | Optimisations qui valent le coup | pooling, réduction d'allocations, ce qu'il ne faut pas faire | 🔜 |
+| 8 | [Optimisations qui valent le coup](niveau-11-performance/lecon-08-optimisations/) | pooling, réduction d'allocations, ce qu'il ne faut pas faire | ✅ |
 
 ---
 
