@@ -200,7 +200,7 @@ Avec, à chaque leçon, la question honnête : **quand ne PAS faire ça**.
 | 7 | [Monolithe modulaire vs microservices](niveau-10-architecture/lecon-07-monolithe-modulaire/) | le monolithe modulaire comme défaut raisonnable | ✅ |
 | 8 | [Événementiel et messaging](niveau-10-architecture/lecon-08-evenementiel/) | queues, pub/sub, outbox, ordre et livraison | ✅ |
 | 9 | [Résilience](niveau-10-architecture/lecon-09-resilience/) | idempotence, retries avec jitter, circuit breakers, timeouts | ✅ |
-| 10 | Observabilité | logs / métriques / traces comme décision d'architecture | 🔜 |
+| 10 | [Observabilité](niveau-10-architecture/lecon-10-observabilite/) | logs / métriques / traces comme décision d'architecture | ✅ |
 
 ➡️ **[Projet 7 — Workers et queues](projets/projet-07-workers-queues/)**
 
