@@ -212,7 +212,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | Mesurer | benchmarks fiables, bruit, `benchstat`, micro vs macro | 🔜 |
+| 1 | [Mesurer](niveau-11-performance/lecon-01-mesurer/) | benchmarks fiables, bruit, `benchstat`, micro vs macro | ✅ |
 | 2 | Pile, tas, escape analysis | `-gcflags=-m`, ce qui s'échappe et pourquoi | 🔜 |
 | 3 | Le ramasse-miettes | tri-color, `GOGC`, `GOMEMLIMIT`, pauses, allocation rapide (1.27) | 🔜 |
 | 4 | pprof — CPU | collecte, flamegraphs, lecture d'un profil | 🔜 |
