@@ -164,7 +164,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 2 | [Requêtes et scan](niveau-08-bases-de-donnees/lecon-02-requetes-scan/) | `QueryRow`, `Query`, `NULL`, types personnalisés, `Scanner`/`Valuer` | ✅ |
 | 3 | [Requêtes préparées](niveau-08-bases-de-donnees/lecon-03-requetes-preparees/) | injection SQL, paramètres, réutilisation | ✅ |
 | 4 | [Transactions](niveau-08-bases-de-donnees/lecon-04-transactions/) | `Begin`/`Commit`/`Rollback`, isolation, `defer` et rollback | ✅ |
-| 5 | Pool de connexions | `SetMaxOpenConns`, saturation, fuites de lignes | 🔜 |
+| 5 | [Pool de connexions](niveau-08-bases-de-donnees/lecon-05-pool/) | `SetMaxOpenConns`, saturation, fuites de lignes | ✅ |
 | 6 | Migrations | outillage, réversibilité, déploiement sans coupure | 🔜 |
 | 7 | Repository pattern | abstraire sans sur-abstraire, tests avec `testcontainers` | 🔜 |
 | 8 | Performance et ORM | index, N+1, `EXPLAIN`, avantages et coûts d'un ORM | 🔜 |
