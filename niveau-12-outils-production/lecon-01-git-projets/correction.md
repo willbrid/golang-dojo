@@ -63,7 +63,7 @@ tourne et comment il a été construit.
 
 ```
 $ go version -m ~/go/bin/staticcheck
-/home/willbrid/go/bin/staticcheck: go1.27.3
+~/go/bin/staticcheck: go1.27.3
 	path	honnef.co/go/tools/cmd/staticcheck
 	mod	honnef.co/go/tools	v0.8.2	h1:+jPbCzuYxYrcoOvCecYUFDj+XJQRmzIhJmlbpps21Zk=
 	dep	github.com/BurntSushi/toml	v1.4.1-0.20240526193622-a339e1f7089c	h1:…

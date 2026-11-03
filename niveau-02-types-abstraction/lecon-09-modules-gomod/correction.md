@@ -102,7 +102,7 @@ jour cette ligne est un **acte délibéré**, à faire en connaissance de cause.
 $ go install golang.org/x/tools/cmd/goimports@latest
 $ git diff go.mod           # aucune modification
 $ which goimports
-/home/willbrid/go/bin/goimports     # $GOPATH/bin
+~/go/bin/goimports     # $GOPATH/bin
 ```
 
 `go install pkg@version` construit et installe un **binaire**, dans un module éphémère isolé.
