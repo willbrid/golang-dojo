@@ -284,7 +284,7 @@ func main() {
 
 	// Évaluation immédiate des arguments
 	x := 1
-	defer fmt.Println("capturé immédiatement :", x) // 1
+	defer fmt.Println("capturé immédiatement :", x)           // 1
 	defer func() { fmt.Println("évalué à la sortie :", x) }() // 2
 	x = 2
 

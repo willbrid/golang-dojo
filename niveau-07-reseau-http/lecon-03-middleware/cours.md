@@ -268,7 +268,10 @@ func TestChain(t *testing.T) {
 		Recover(&panics),
 	)
 
-	for _, tc := range []struct{ path, reqID, wantBody string; wantStatus int }{
+	for _, tc := range []struct {
+		path, reqID, wantBody string
+		wantStatus            int
+	}{
 		{"/hello", "", "bonjour (req-1)", 200},
 		{"/hello", "proxy-42", "bonjour (proxy-42)", 200},
 		{"/boom", "", "erreur interne\n", 500},

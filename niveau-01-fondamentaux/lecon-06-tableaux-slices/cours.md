@@ -238,8 +238,8 @@ func main() {
 	describe("safe", safe)
 	describe("base intact", base)
 
-	bounded := base[1:3:3]              // len=2 cap=2
-	bounded = append(bounded, 7)        // capacité atteinte → réalloue
+	bounded := base[1:3:3]       // len=2 cap=2
+	bounded = append(bounded, 7) // capacité atteinte → réalloue
 	describe("bounded", bounded)
 	describe("base intact", base)
 

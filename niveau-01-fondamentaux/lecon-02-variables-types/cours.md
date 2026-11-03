@@ -293,9 +293,9 @@ func severityName(s Severity) string {
 }
 
 func main() {
-	const maxRetries = 3        // non typée : utilisable comme int, float64…
-	var attempt int             // zéro-valeur : 0
-	level := Warning            // type déduit : Severity
+	const maxRetries = 3                            // non typée : utilisable comme int, float64…
+	var attempt int                                 // zéro-valeur : 0
+	level := Warning                                // type déduit : Severity
 	ratio := float64(attempt) / float64(maxRetries) // conversions explicites obligatoires
 
 	fmt.Printf("niveau=%s tentative=%d/%d ratio=%.2f\n", severityName(level), attempt, maxRetries, ratio)

@@ -209,8 +209,8 @@ package main
 
 import (
 	"fmt"
-	"slices"
 	"maps"
+	"slices"
 )
 
 // Address est imbriquée par valeur : elle fait partie de Customer.
@@ -232,9 +232,9 @@ type Customer struct {
 // Clone effectue une copie PROFONDE. Sans elle, `c2 := c1` partagerait
 // Tags et Meta, et l'indépendance apparente serait une illusion.
 func (c Customer) Clone() Customer {
-	out := c                       // copie superficielle : champs scalaires et Address
+	out := c // copie superficielle : champs scalaires et Address
 	out.Tags = slices.Clone(c.Tags)
-	out.Meta = maps.Clone(c.Meta)  // maps.Clone : Go 1.21+
+	out.Meta = maps.Clone(c.Meta) // maps.Clone : Go 1.21+
 	return out
 }
 

@@ -269,10 +269,10 @@ func main() {
 	_ = rc.Close() // méthode PROMUE depuis l'interface embarquée
 
 	d := Derived{Base: Base{Name: "Rex"}, Extra: "chien"}
-	fmt.Println(d.Greet())        // Derived:Rex/chien — la méthode extérieure masque
-	fmt.Println(d.Base.Greet())   // Base:Rex          — l'originale reste accessible
-	fmt.Println(d.Describe())     // « je m'appelle Base:Rex » ← PAS Derived !
-	fmt.Println(d.Name)           // Rex — champ promu
+	fmt.Println(d.Greet())      // Derived:Rex/chien — la méthode extérieure masque
+	fmt.Println(d.Base.Greet()) // Base:Rex          — l'originale reste accessible
+	fmt.Println(d.Describe())   // « je m'appelle Base:Rex » ← PAS Derived !
+	fmt.Println(d.Name)         // Rex — champ promu
 
 	// var b Base = d            // ← ne compilerait pas : pas de sous-typage
 }

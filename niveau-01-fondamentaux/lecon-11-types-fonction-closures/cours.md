@@ -265,8 +265,14 @@ func main() {
 
 	// Une map de fonctions remplace un switch sur des noms de commandes.
 	commands := map[string]Transform{
-		"upper":   strings.ToUpper,
-		"reverse": func(s string) string { r := []rune(s); for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 { r[i], r[j] = r[j], r[i] }; return string(r) },
+		"upper": strings.ToUpper,
+		"reverse": func(s string) string {
+			r := []rune(s)
+			for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
+				r[i], r[j] = r[j], r[i]
+			}
+			return string(r)
+		},
 	}
 	if cmd, ok := commands["upper"]; ok {
 		fmt.Println(Apply([]string{"go", "rust"}, cmd))
