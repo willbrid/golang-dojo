@@ -191,7 +191,7 @@ Avec, à chaque leçon, la question honnête : **quand ne PAS faire ça**.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | Séparation des responsabilités | couches, dépendances dirigées vers le domaine | 🔜 |
+| 1 | [Séparation des responsabilités](niveau-10-architecture/lecon-01-separation/) | couches, dépendances dirigées vers le domaine | ✅ |
 | 2 | handler / service / repository | le découpage par défaut d'un backend Go | 🔜 |
 | 3 | Injection de dépendances | sans framework, par constructeur ; `wire` en option | 🔜 |
 | 4 | Interfaces bien conçues | côté consommateur, petites, découvertes tardivement | 🔜 |
