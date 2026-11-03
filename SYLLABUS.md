@@ -160,7 +160,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | `database/sql` | modèle, drivers, `pgx` avec PostgreSQL | 🔜 |
+| 1 | [`database/sql`](niveau-08-bases-de-donnees/lecon-01-database-sql/) | modèle, drivers, `pgx` avec PostgreSQL | ✅ |
 | 2 | Requêtes et scan | `QueryRow`, `Query`, `NULL`, types personnalisés, `Scanner`/`Valuer` | 🔜 |
 | 3 | Requêtes préparées | injection SQL, paramètres, réutilisation | 🔜 |
 | 4 | Transactions | `Begin`/`Commit`/`Rollback`, isolation, `defer` et rollback | 🔜 |
