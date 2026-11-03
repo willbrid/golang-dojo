@@ -252,7 +252,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | 5 | [Bugs mémoire et races difficiles](niveau-13-expert/lecon-05-bugs-difficiles/) | reproduction, réduction, correction | ✅ |
 | 6 | [Conception d'API durable](niveau-13-expert/lecon-06-api-durable/) | compatibilité, dépréciation, versions majeures | ✅ |
 | 7 | [Résilience et scalabilité](niveau-13-expert/lecon-07-resilience-scalabilite/) | dégradation gracieuse, capacité, tests de charge | ✅ |
-| 8 | Décisions d'architecture | ADR, arbitrages, revue de code senior | 🔜 |
+| 8 | [Décisions d'architecture](niveau-13-expert/lecon-08-decisions-architecture/) | ADR, arbitrages, revue de code senior | ✅ |
 
 ➡️ **[Projet final](projets/projet-final/)**
 
