@@ -231,7 +231,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | 2 | [Build de production](niveau-12-outils-production/lecon-02-build/) | cross-compilation, `-ldflags`, builds reproductibles | ✅ |
 | 3 | [Docker](niveau-12-outils-production/lecon-03-docker/) | multi-stage, distroless, binaire statique | ✅ |
 | 4 | [CI/CD](niveau-12-outils-production/lecon-04-ci-cd/) | GitHub Actions : test, lint, race, build, release | ✅ |
-| 5 | Configuration | variables d'environnement, précédence, validation au démarrage | 🔜 |
+| 5 | [Configuration](niveau-12-outils-production/lecon-05-configuration/) | variables d'environnement, précédence, validation au démarrage | ✅ |
 | 6 | Logs structurés | `log/slog`, niveaux, contexte, ce qu'on ne journalise jamais | 🔜 |
 | 7 | Métriques et traces | Prometheus, OpenTelemetry, corrélation | 🔜 |
 | 8 | Sécurité et secrets | `govulncheck`, gestion de secrets, surface d'attaque | 🔜 |
