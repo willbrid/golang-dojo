@@ -132,7 +132,9 @@ Le profil `goroutineleak` s'appuie sur le ramasse-miettes : une goroutine bloqu�
 verrou que **plus aucune autre goroutine ne peut atteindre** ne pourra jamais être débloquée — elle est
 fuie, par définition, et le runtime peut le **prouver**. Le profil liste uniquement celles-là, avec la
 ligne où elles sont bloquées. Une goroutine bloquée sur un channel encore référencé ailleurs (qui
-*pourrait* être débloquée) n'y figure pas : pas de faux positif.
+*pourrait* être débloquée) n'y figure pas : pas de faux positif. L'inverse n'est pas garanti : le profil
+peut **manquer** des fuites réelles (faux négatifs, mesurés au niveau 11, leçon 5) ; son silence ne prouve
+donc pas l'absence de fuite, et le nombre de goroutines suivi dans le temps reste indispensable.
 
 ```go
 pprof.Lookup("goroutineleak").WriteTo(os.Stderr, 1)
