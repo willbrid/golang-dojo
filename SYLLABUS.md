@@ -197,7 +197,7 @@ Avec, à chaque leçon, la question honnête : **quand ne PAS faire ça**.
 | 4 | [Interfaces bien conçues](niveau-10-architecture/lecon-04-interfaces/) | côté consommateur, petites, découvertes tardivement | ✅ |
 | 5 | [Hexagonale et clean](niveau-10-architecture/lecon-05-hexagonale-clean/) | ports/adaptateurs, coût réel, sur-ingénierie | ✅ |
 | 6 | [Domain-Driven Design](niveau-10-architecture/lecon-06-ddd/) | langage ubiquitaire, agrégats, contextes bornés | ✅ |
-| 7 | Monolithe modulaire vs microservices | le monolithe modulaire comme défaut raisonnable | 🔜 |
+| 7 | [Monolithe modulaire vs microservices](niveau-10-architecture/lecon-07-monolithe-modulaire/) | le monolithe modulaire comme défaut raisonnable | ✅ |
 | 8 | Événementiel et messaging | queues, pub/sub, outbox, ordre et livraison | 🔜 |
 | 9 | Résilience | idempotence, retries avec jitter, circuit breakers, timeouts | 🔜 |
 | 10 | Observabilité | logs / métriques / traces comme décision d'architecture | 🔜 |
