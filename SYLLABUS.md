@@ -166,7 +166,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 | 4 | [Transactions](niveau-08-bases-de-donnees/lecon-04-transactions/) | `Begin`/`Commit`/`Rollback`, isolation, `defer` et rollback | ✅ |
 | 5 | [Pool de connexions](niveau-08-bases-de-donnees/lecon-05-pool/) | `SetMaxOpenConns`, saturation, fuites de lignes | ✅ |
 | 6 | [Migrations](niveau-08-bases-de-donnees/lecon-06-migrations/) | outillage, réversibilité, déploiement sans coupure | ✅ |
-| 7 | Repository pattern | abstraire sans sur-abstraire, tests avec `testcontainers` | 🔜 |
+| 7 | [Repository pattern](niveau-08-bases-de-donnees/lecon-07-repository/) | abstraire sans sur-abstraire, suite de contrat, tests contre une vraie base (schéma par test, `testcontainers`) | ✅ |
 | 8 | Performance et ORM | index, N+1, `EXPLAIN`, avantages et coûts d'un ORM | 🔜 |
 
 ➡️ **[Projet 4 — API avec PostgreSQL](projets/projet-04-api-postgresql/)** ·
