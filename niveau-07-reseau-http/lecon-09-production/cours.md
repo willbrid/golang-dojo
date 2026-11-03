@@ -149,8 +149,8 @@ func NewServer(addr string, h http.Handler) *http.Server {
 func SecurityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
-		h.Set("X-Content-Type-Options", "nosniff")        // pas de devinette de type (leçon 2)
-		h.Set("X-Frame-Options", "DENY")                  // pas d'affichage dans une iframe (clickjacking)
+		h.Set("X-Content-Type-Options", "nosniff") // pas de devinette de type (leçon 2)
+		h.Set("X-Frame-Options", "DENY")           // pas d'affichage dans une iframe (clickjacking)
 		h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		h.Set("Content-Security-Policy", "default-src 'self'")
 		if r.TLS != nil {

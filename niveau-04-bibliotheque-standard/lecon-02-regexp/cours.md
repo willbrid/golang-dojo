@@ -188,7 +188,8 @@ import (
 )
 
 // Analyse de lignes de journal d'accès HTTP au format :
-//   127.0.0.1 - [03/Oct/2026:08:12:01] "GET /users/42 HTTP/1.1" 200 512 12ms
+//
+//	127.0.0.1 - [03/Oct/2026:08:12:01] "GET /users/42 HTTP/1.1" 200 512 12ms
 var accessRe = regexp.MustCompile(
 	`^(?P<ip>\S+) - \[(?P<time>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^"]*" (?P<status>\d{3}) (?P<size>\d+) (?P<dur>\d+)ms$`,
 )

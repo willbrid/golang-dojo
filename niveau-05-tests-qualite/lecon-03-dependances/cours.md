@@ -199,8 +199,8 @@ import (
 // fakeMailer est un spy : il enregistre les messages au lieu de les envoyer,
 // et peut simuler une panne pour certains destinataires.
 type fakeMailer struct {
-	sent   []string            // destinataires, dans l'ordre
-	bodies map[string]string   // dernier corps par destinataire
+	sent   []string          // destinataires, dans l'ordre
+	bodies map[string]string // dernier corps par destinataire
 	failTo map[string]bool
 }
 

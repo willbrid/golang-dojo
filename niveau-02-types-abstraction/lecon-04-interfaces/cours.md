@@ -269,8 +269,8 @@ func main() {
 	// Le piège de l'interface nil, démontré :
 	var ln *LogNotifier
 	var iface Notifier = ln
-	fmt.Println("\nln == nil :", ln == nil)         // true
-	fmt.Println("iface == nil :", iface == nil)     // FALSE — le type n'est pas nil
+	fmt.Println("\nln == nil :", ln == nil)     // true
+	fmt.Println("iface == nil :", iface == nil) // FALSE — le type n'est pas nil
 	fmt.Printf("iface = (%T, %v)\n", iface, iface)
 }
 ```

@@ -178,7 +178,7 @@ import (
 
 type Server struct {
 	inventoryv1.UnimplementedInventoryServiceServer // compatibilité ascendante : méthodes futures « non implémentées »
-	items map[string]*inventoryv1.Item
+	items                                           map[string]*inventoryv1.Item
 }
 
 func NewServer() *Server {

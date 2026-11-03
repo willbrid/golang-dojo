@@ -252,8 +252,8 @@ func main() {
 		return
 	}
 
-	stock, _ := t.Column("stock", strconv.Atoi)     // T = int
-	prix, _ := t.Column("prix", parseFloat)         // T = float64
+	stock, _ := t.Column("stock", strconv.Atoi)      // T = int
+	prix, _ := t.Column("prix", parseFloat)          // T = float64
 	actif, _ := t.Column("actif", strconv.ParseBool) // T = bool
 	fmt.Println(stock, prix, actif)
 
