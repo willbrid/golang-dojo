@@ -100,7 +100,9 @@ package auth
 
 type userKey struct{}
 
-func WithUser(ctx context.Context, u User) context.Context { return context.WithValue(ctx, userKey{}, u) }
+func WithUser(ctx context.Context, u User) context.Context {
+	return context.WithValue(ctx, userKey{}, u)
+}
 
 func UserFrom(ctx context.Context) (User, bool) {
 	u, ok := ctx.Value(userKey{}).(User)

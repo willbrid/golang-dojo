@@ -177,7 +177,7 @@ func (it Item) String() string {
 	return fmt.Sprintf("%-10s %-20s x%-4d %d,%02d €",
 		it.SKU, it.Name, it.quantity, it.priceCts/100, it.priceCts%100)
 }
-func (it Item) Quantity() int  { return it.quantity }  // accesseur : pas de préfixe Get
+func (it Item) Quantity() int   { return it.quantity } // accesseur : pas de préfixe Get
 func (it Item) PriceCts() int64 { return it.priceCts }
 
 // Récepteur POINTEUR partout : Add et Remove modifient l'inventaire,

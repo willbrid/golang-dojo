@@ -189,8 +189,8 @@ import (
 type ByteSize int64
 
 const (
-	B  ByteSize = 1 << (10 * iota) // 1
-	KiB                            // 1024
+	B   ByteSize = 1 << (10 * iota) // 1
+	KiB                             // 1024
 	MiB
 	GiB
 	TiB

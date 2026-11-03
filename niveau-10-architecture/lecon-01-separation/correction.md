@@ -271,9 +271,9 @@ func TestReturn(t *testing.T) {
 		at   time.Time
 		want int
 	}{
-		{due, 0},                              // le jour même, à l'heure exacte : à l'heure
-		{due.Add(time.Minute), 1},             // une minute de retard : un jour entamé
-		{due.Add(24 * time.Hour), 1},          // exactement un jour
+		{due, 0},                     // le jour même, à l'heure exacte : à l'heure
+		{due.Add(time.Minute), 1},    // une minute de retard : un jour entamé
+		{due.Add(24 * time.Hour), 1}, // exactement un jour
 		{due.Add(24*time.Hour + time.Second), 2},
 	}
 	for _, c := range cases {

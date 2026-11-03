@@ -95,7 +95,7 @@ la fonction ni l'entrée) : c'est l'argument de l'équipe Go contre les biblioth
 // export_test.go — compilé SEULEMENT pendant les tests, dans le paquet interne
 package stats
 
-var Quantile = quantile   // expose la fonction non exportée aux tests externes
+var Quantile = quantile // expose la fonction non exportée aux tests externes
 ```
 
 ```go

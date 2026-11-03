@@ -228,12 +228,17 @@ type Admin struct {
 	n int
 }
 
-func (a *Admin) Incr(by int) int             { a.n += by; return a.n }
-func (a *Admin) Sleep(d time.Duration) error { if d > time.Second { return errors.New("trop long") }; return nil }
-func (a *Admin) Boom()                       { panic("plus de mémoire") }
-func (a *Admin) Shutdown()                   {}
-func (a *Admin) Bad(m map[string]int)        {}
-func (a Admin) Get() int                     { return a.n }
+func (a *Admin) Incr(by int) int { a.n += by; return a.n }
+func (a *Admin) Sleep(d time.Duration) error {
+	if d > time.Second {
+		return errors.New("trop long")
+	}
+	return nil
+}
+func (a *Admin) Boom()                { panic("plus de mémoire") }
+func (a *Admin) Shutdown()            {}
+func (a *Admin) Bad(m map[string]int) {}
+func (a Admin) Get() int              { return a.n }
 
 func TestConstruction(t *testing.T) {
 	_, err := NewDispatcher(&Admin{}, "Incr", "Absente", "Bad")
@@ -332,9 +337,9 @@ func values(vs []reflect.Value) []any {
 	return out
 }
 
-func (c *Calls) Len() int              { c.mu.Lock(); defer c.mu.Unlock(); return len(c.args) }
-func (c *Calls) Args(i int) []any      { c.mu.Lock(); defer c.mu.Unlock(); return c.args[i] }
-func (c *Calls) Results(i int) []any   { c.mu.Lock(); defer c.mu.Unlock(); return c.results[i] }
+func (c *Calls) Len() int            { c.mu.Lock(); defer c.mu.Unlock(); return len(c.args) }
+func (c *Calls) Args(i int) []any    { c.mu.Lock(); defer c.mu.Unlock(); return c.args[i] }
+func (c *Calls) Results(i int) []any { c.mu.Lock(); defer c.mu.Unlock(); return c.results[i] }
 
 // Spy rend une fonction du type de impl, qui lui délègue et enregistre chaque appel.
 func Spy[F any](impl F) (F, *Calls) {

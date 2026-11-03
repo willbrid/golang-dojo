@@ -211,7 +211,9 @@ import (
 
 type overdueFunc func(context.Context, time.Time) ([]loan.Loan, error)
 
-func (f overdueFunc) Overdue(ctx context.Context, now time.Time) ([]loan.Loan, error) { return f(ctx, now) }
+func (f overdueFunc) Overdue(ctx context.Context, now time.Time) ([]loan.Loan, error) {
+	return f(ctx, now)
+}
 
 func TestOneReminderPerMember(t *testing.T) {
 	src := overdueFunc(func(context.Context, time.Time) ([]loan.Loan, error) {
@@ -427,7 +429,9 @@ import (
 
 type overdueFunc func(context.Context, time.Time) ([]loan.Loan, error)
 
-func (f overdueFunc) Overdue(ctx context.Context, now time.Time) ([]loan.Loan, error) { return f(ctx, now) }
+func (f overdueFunc) Overdue(ctx context.Context, now time.Time) ([]loan.Loan, error) {
+	return f(ctx, now)
+}
 
 func TestStacking(t *testing.T) {
 	clock := time.Date(2026, 3, 1, 0, 0, 0, 0, time.UTC)
