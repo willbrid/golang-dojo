@@ -43,9 +43,10 @@ Sans échappement : « 100% » donne le motif `%100%%`, qui trouve « 100% Go »
 Ordres de grandeur attendus (une connexion, réseau local) : cache par défaut, `Stmt` préparé et
 protocole simple sont dans le bruit l'un de l'autre (≈ 0,1 – 0,2 ms, dominé par l'aller-retour réseau) ;
 `Prepare` à chaque appel est 2,5 à 4 fois plus lent (deux allers-retours de plus : préparation et
-fermeture). Avec `-count 6` et `benchstat`, les trois premiers apparaissent typiquement avec un `p`
-supérieur à 0,05 (« ~ ») : pas de différence démontrée. Conclusion : avec pgx, la préparation
-explicite n'est pas une optimisation par défaut.
+fermeture). Dans nos mesures (3 séries), les plages des trois premiers se chevauchent largement : l'écart
+est plus petit que le bruit. `benchstat` sur `-count 6` est l'outil pour le dire rigoureusement (un « ~ »
+signale l'absence de différence significative ; il n'a pas été exécuté pour ce corrigé). Conclusion :
+avec pgx, la préparation explicite n'est pas une optimisation par défaut.
 
 ## Exercice intermédiaire — Un constructeur de requêtes sûr
 
