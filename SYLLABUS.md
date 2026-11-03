@@ -234,7 +234,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | 5 | [Configuration](niveau-12-outils-production/lecon-05-configuration/) | variables d'environnement, précédence, validation au démarrage | ✅ |
 | 6 | [Logs structurés](niveau-12-outils-production/lecon-06-slog/) | `log/slog`, niveaux, contexte, ce qu'on ne journalise jamais | ✅ |
 | 7 | [Métriques et traces](niveau-12-outils-production/lecon-07-metriques-traces/) | Prometheus, OpenTelemetry, corrélation | ✅ |
-| 8 | Sécurité et secrets | `govulncheck`, gestion de secrets, surface d'attaque | 🔜 |
+| 8 | [Sécurité et secrets](niveau-12-outils-production/lecon-08-securite/) | `govulncheck`, gestion de secrets, surface d'attaque | ✅ |
 | 9 | Production | déploiement, santé, monitoring, debugging à chaud | 🔜 |
 
 ➡️ **[Projet 8 — Microservice Go professionnel](projets/projet-08-microservice/)**
