@@ -178,7 +178,7 @@ Le cœur de Go. Beaucoup d'exercices, volontairement.
 
 | # | Leçon | Contenu | État |
 |---|---|---|---|
-| 1 | Bases de `reflect` | `Type` et `Value`, `Kind`, les trois lois de la réflexion | 🔜 |
+| 1 | [Bases de `reflect`](niveau-09-reflexion/lecon-01-bases-reflect/) | `Type` et `Value`, `Kind`, les trois lois de la réflexion | ✅ |
 | 2 | Structs, champs et balises | parcourir une struct, lire les balises, modifier une valeur (`CanSet`) | 🔜 |
 | 3 | Fonctions, méthodes et types dynamiques | `Call`, création dynamique, `reflect.DeepEqual` et ses surprises | 🔜 |
 | 4 | Coût et alternatives | performance réelle, génération de code, génériques — quand ne pas réfléchir | 🔜 |
