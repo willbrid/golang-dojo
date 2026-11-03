@@ -195,7 +195,7 @@ Avec, à chaque leçon, la question honnête : **quand ne PAS faire ça**.
 | 2 | [handler / service / repository](niveau-10-architecture/lecon-02-handler-service-repository/) | le découpage par défaut d'un backend Go | ✅ |
 | 3 | [Injection de dépendances](niveau-10-architecture/lecon-03-injection-dependances/) | sans framework, par constructeur ; `wire` en option | ✅ |
 | 4 | [Interfaces bien conçues](niveau-10-architecture/lecon-04-interfaces/) | côté consommateur, petites, découvertes tardivement | ✅ |
-| 5 | Hexagonale et clean | ports/adaptateurs, coût réel, sur-ingénierie | 🔜 |
+| 5 | [Hexagonale et clean](niveau-10-architecture/lecon-05-hexagonale-clean/) | ports/adaptateurs, coût réel, sur-ingénierie | ✅ |
 | 6 | Domain-Driven Design | langage ubiquitaire, agrégats, contextes bornés | 🔜 |
 | 7 | Monolithe modulaire vs microservices | le monolithe modulaire comme défaut raisonnable | 🔜 |
 | 8 | Événementiel et messaging | queues, pub/sub, outbox, ordre et livraison | 🔜 |
