@@ -250,7 +250,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | 3 | [Systèmes distribués](niveau-13-expert/lecon-03-systemes-distribues/) | cohérence, horloges, consensus, partitions | ✅ |
 | 4 | [Debugging complexe](niveau-13-expert/lecon-04-debugging/) | `delve`, détecteur de races, core dumps, traces d'exécution | ✅ |
 | 5 | [Bugs mémoire et races difficiles](niveau-13-expert/lecon-05-bugs-difficiles/) | reproduction, réduction, correction | ✅ |
-| 6 | Conception d'API durable | compatibilité, dépréciation, versions majeures | 🔜 |
+| 6 | [Conception d'API durable](niveau-13-expert/lecon-06-api-durable/) | compatibilité, dépréciation, versions majeures | ✅ |
 | 7 | Résilience et scalabilité | dégradation gracieuse, capacité, tests de charge | 🔜 |
 | 8 | Décisions d'architecture | ADR, arbitrages, revue de code senior | 🔜 |
 
