@@ -217,7 +217,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | 3 | [Le ramasse-miettes](niveau-11-performance/lecon-03-ramasse-miettes/) | tri-color, `GOGC`, `GOMEMLIMIT`, pauses, allocation rapide (1.27) | ✅ |
 | 4 | [pprof — CPU](niveau-11-performance/lecon-04-pprof-cpu/) | collecte, flamegraphs, lecture d'un profil | ✅ |
 | 5 | [pprof — mémoire, block, mutex](niveau-11-performance/lecon-05-pprof-memoire/) | allocations, contention, profil `goroutineleak` (1.27) | ✅ |
-| 6 | Slices, maps et cache | préallocation, localité, coût réel | 🔜 |
+| 6 | [Slices, maps et cache](niveau-11-performance/lecon-06-slices-maps-cache/) | préallocation, localité, coût réel | ✅ |
 | 7 | Latence et débit | percentiles, loi de Little, files d'attente | 🔜 |
 | 8 | Optimisations qui valent le coup | pooling, réduction d'allocations, ce qu'il ne faut pas faire | 🔜 |
 
