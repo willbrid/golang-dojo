@@ -246,7 +246,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 | # | Module | Contenu | État |
 |---|---|---|---|
 | 1 | [Systèmes concurrents](niveau-13-expert/lecon-01-systemes-concurrents/) | conception, invariants, preuves informelles | ✅ |
-| 2 | Serveurs haute performance | budget d'allocation, zero-copy, epoll et le runtime | 🔜 |
+| 2 | [Serveurs haute performance](niveau-13-expert/lecon-02-serveurs-performants/) | budget d'allocation, zero-copy, epoll et le runtime | ✅ |
 | 3 | Systèmes distribués | cohérence, horloges, consensus, partitions | 🔜 |
 | 4 | Debugging complexe | `delve`, détecteur de races, core dumps, traces d'exécution | 🔜 |
 | 5 | Bugs mémoire et races difficiles | reproduction, réduction, correction | 🔜 |
