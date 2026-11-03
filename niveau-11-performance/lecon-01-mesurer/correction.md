@@ -5,9 +5,10 @@
 ## E1 — Ton bruit
 
 Les valeurs dépendent de la machine. Sur celle de la leçon, au repos, `Join` varie de ±17 à ±18 %
-autour de la médiane ; sous charge concurrente, la médiane monte et l'étendue s'élargit, et le test de rang
-conclut généralement à une différence (la charge **change** réellement les conditions). Leçon : on ne
-compare jamais une série mesurée au repos à une série mesurée sous charge.
+autour de la médiane. Sous charge concurrente, on doit s'attendre à une médiane plus haute et une
+étendue plus large — c'est ce que l'exercice demande de constater sur ta machine, et le test de rang le
+dira s'il conclut à une différence (la charge **change** réellement les conditions de mesure). Leçon : on
+ne compare jamais une série mesurée au repos à une série mesurée sous charge.
 
 ## E2 — Le compilateur malin
 
