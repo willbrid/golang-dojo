@@ -214,7 +214,7 @@ Règle du niveau : **mesurer avant d'optimiser**, toujours.
 |---|---|---|---|
 | 1 | [Mesurer](niveau-11-performance/lecon-01-mesurer/) | benchmarks fiables, bruit, `benchstat`, micro vs macro | ✅ |
 | 2 | [Pile, tas, escape analysis](niveau-11-performance/lecon-02-pile-tas/) | `-gcflags=-m`, ce qui s'échappe et pourquoi | ✅ |
-| 3 | Le ramasse-miettes | tri-color, `GOGC`, `GOMEMLIMIT`, pauses, allocation rapide (1.27) | 🔜 |
+| 3 | [Le ramasse-miettes](niveau-11-performance/lecon-03-ramasse-miettes/) | tri-color, `GOGC`, `GOMEMLIMIT`, pauses, allocation rapide (1.27) | ✅ |
 | 4 | pprof — CPU | collecte, flamegraphs, lecture d'un profil | 🔜 |
 | 5 | pprof — mémoire, block, mutex | allocations, contention, profil `goroutineleak` (1.27) | 🔜 |
 | 6 | Slices, maps et cache | préallocation, localité, coût réel | 🔜 |
